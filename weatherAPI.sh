@@ -10,26 +10,25 @@ if [ "$#" -ne 4 ]; then
 	exit 1
 fi
 
+# configurable items
+UNIT=metric             # metric or imperial
+WEATHER_LINK="https://www.weatherapi.com/weather/q/oshawa-ontario-canada-316180?loc=316180"
+
 # script globals 
 SITENAME="$1"
 LATITUDE="$2"
 LONGITUDE="$3"
 API_KEY="$4"
-
-H1="X-RapidAPI-Key: $API_KEY"
-H2="X-RapidAPI-Host: weatherapi-com.p.rapidapi.com"
-OD="https://weatherapi-com.p.rapidapi.com/forecast.json?q=$LATITUDE%2C$LONGITUDE&days=3"
-
-WEATHER_LINK="https://www.weatherapi.com/weather/q/oshawa-ontario-canada-316180?loc=316180"
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 IMAGES_DIR="$SCRIPT_DIR/icons"
 CACHE_DIR="$HOME/.cache/weatherAPI"
 CACHE_FILE="$CACHE_DIR/weather.tmp"
-TEMP_UNIT=metric        # metric or imperial
-WIND_UNIT=metric        # metric or imperial
+H1="X-RapidAPI-Key: $API_KEY"
+H2="X-RapidAPI-Host: weatherapi-com.p.rapidapi.com"
+OD="https://weatherapi-com.p.rapidapi.com/forecast.json?q=$LATITUDE%2C$LONGITUDE&days=3"
 
-# make sure tmp cache dir exists or delete contents
-[[ -d "$CACHE_DIR" ]] && rm -rf $CACHE_DIR/* || mkdir -p $CACHE_DIR
+# make sure tmp cache dir exists 
+[[ -d "$CACHE_DIR" ]] || mkdir -p $CACHE_DIR
 
 # call the weather API
 wget  --quiet \
@@ -39,11 +38,6 @@ wget  --quiet \
         --output-document \
         - "$OD" \
         -O $CACHE_FILE
-
-if [ ! -s $CACHE_FILE ]; then 
-	echo "No content in file"
-	exit 1
-fi
 
 #parse the results
 NAME=$(jq ".location.name" $CACHE_FILE | tr -d \")
@@ -111,11 +105,109 @@ do
     FASTRO_SUNSET[$c]=$(jq ".forecast.forecastday[$c].astro.sunset" $CACHE_FILE | tr -d \")
     FASTRO_MOONRISE[$c]=$(jq ".forecast.forecastday[$c].astro.moonrise" $CACHE_FILE | tr -d \")
     FASTRO_MOONSET[$c]=$(jq ".forecast.forecastday[$c].astro.moonset" $CACHE_FILE | tr -d \")
-    FASTRO_SUNPHASE[$c]=$(jq ".forecast.forecastday[$c].astro.moonphase" $CACHE_FILE | tr -d \")
+    FASTRO_MOONPHASE[$c]=$(jq ".forecast.forecastday[$c].astro.moon_phase" $CACHE_FILE | tr -d \")
     FASTRO_MOON_ILLUMINATION[$c]=$(jq ".forecast.forecastday[$c].astro.moon_illumination" $CACHE_FILE | tr -d \")
     FASTRO_IS_MOON_UP[$c]=$(jq ".forecast.forecastday[$c].astro.is_moon_up" $CACHE_FILE | tr -d \")
     FASTRO_IS_SUN_UP[$c]=$(jq ".forecast.forecastday[$c].astro.is_sun_up" $CACHE_FILE | tr -d \")
 done
+
+# unit processing - prepare metric or imperial measurement
+case $UNIT in
+    metric)
+        gTEMP_SUFFIX="°C"
+        gWIND_SUFFIX="kph"
+        gPRESSURE_SUFFIX="mb"
+        gPRECIP_SUFFIX="mm"
+        gVIS_SUFFIX="km"
+        gTEMP=$TEMP_C
+        gWIND=$WIND_KPH
+        gPRESSURE=$PRESSURE_MB
+        gPRECIP=$PRECIP_MM
+        gFEELSLIKE=$FEELSLIKE_C
+        gVIS=$VIS_KM
+        gGUST=$GUST_KPH
+        for (( c=0; c<3; c++ ))
+        do
+            gFMAXTEMP[$c]=${FMAXTEMP_C[$c]}
+            gFMINTEMP[$c]=${FMINTEMP_C[$c]}
+            gFAVGTEMP[$c]=${FAVGTEMP_C[$c]}
+            gFMAXWIND[$c]=${FMAXWIND_KPH[$c]}
+            gFTOTALPRECIP[$c]=${FTOTALPRECIP_MM[$c]}
+            gFAVGVIS[$c]=${FAVGVIS_KM[$c]}
+            gFASTRO_SUNRISE[$c]=$(date -d "${FASTRO_SUNRISE[$c]}" "+%-I:%M%P")
+            gFASTRO_SUNSET[$c]=$(date -d "${FASTRO_SUNSET[$c]}" "+%-I:%M%P")
+        done
+    ;;
+    imperial)
+        gTEMP_SUFFIX="°F"
+        gWIND_SUFFIX="mph"
+        gPRESSURE_SUFFIX="in"
+        gPRECIP_SUFFIX="in"
+        gVIS_SUFFIX="miles"
+        gTEMP=$TEMP_F
+        gWIND=$WIND_MPH
+        gPRESSURE=$PRESSURE_IN
+        gPRECIP=$PRECIP_IN
+        gFEELSLIKE=$FEELSLIKE_F
+        gVIS=$VIS_MILES
+        gGUST=$GUST_MPH
+        for (( c=0; c<3; c++ ))
+        do
+            gFMAXTEMP[c$]=${FMAXTEMP_F[$c]}
+            gFMINTEMP[c$]=${FMINTEMP_F[$c]}
+            gFAVGTEMP[c$]=${FAVGTEMP_F[$c]}
+            gFMAXWIND[c$]=${FMAXWIND_MPH[$c]}
+            gFTOTALPRECIP[$c]=${FTOTALPRECIP_IN[$c]}
+            gFAVGVIS[$c]=${FAVGVIS_MILES[$c]}
+            gFASTRO_SUNRISE[$c]=$(date -d "${FASTRO_SUNRISE[$c]}" "+%-I:%M%P")
+            gFASTRO_SUNSET[$c]=$(date -d "${FASTRO_SUNSET[$c]}" "+%-I:%M%P")
+        done
+    ;;
+esac
+
+# format dates
+
+
+# parse uvindex value into text
+case $UV in
+    [0-2])          UVSTR="Low"         ;;
+    [3-5])          UVSTR="Moderate"    ;;
+    [6-7])          UVSTR="High"        ;;
+    [8-9]|10)       UVSTR="Very high"   ;;
+    11|12)          UVSTR="Extreme"     ;;
+    *)              UVSTR="Unknown"     ;;
+esac
+
+
+# genmon
+echo "<img>http:$CONDITION_ICON</img><txt> $gTEMP$gTEMP_SUFFIX</txt>"
+echo "<click>exo-open $WEATHER_LINK</click><txtclick>exo-open $WEATHER_LINK</txtclick>"
+echo "<css></css>"
+echo -e "<tool><big>$SITENAME</big>
+$gTEMP$gTEMP_SUFFIX <small>and</small> $CONDITION_TEXT
+
+Feels Like:\t\t$gFEELSLIKE$gTEMP_SUFFIX
+
+Humidity:\t\t$HUMIDITY %
+Pressure:\t\t$gPRESSURE $gPRESSURE_SUFFIX
+UV:\t\t$UV ($UVSTR)
+
+Clouds:\t\t$CLOUD %
+Wind:\t\t$gWIND $gWIND_SUFFIX <small>from the</small>$WIND_DIR
+Gusting:\t$gGUST $gWIND_SUFFIX
+
+Precipitation:\t${gFTOTALPRECIP[0]} $gPRECIP_SUFFIX
+
+Sunrise/set:\t${gFASTRO_SUNRISE[0]} / ${gFASTRO_SUNSET[0]}
+Moonphase:\t${FASTRO_MOONPHASE[0]} (${FASTRO_MOON_ILLUMINATION[0]} %)
+
+Today:\t${FCONDITION_TEXT[0]}, high: ${gFMAXTEMP[0]} low: ${gFMINTEMP[0]}
+Tomorrow:\t${FCONDITION_TEXT[1]}, high: ${gFMAXTEMP[1]}, low: ${gFMINTEMP[1]}
+Next Day:\t${FCONDITION_TEXT[2]}, high: ${gFMAXTEMP[2]}, low: ${gFMINTEMP[2]}
+
+<small><i>$LAST_UPDATED</i></small></tool>"
+
+exit 0
 
 # debug
 echo "NAME=$NAME"
@@ -184,7 +276,7 @@ do
     echo "FASTRO_SUNSET[$c]=${FASTRO_SUNSET[$c]}"
     echo "FASTRO_MOONRISE[$c]=${FASTRO_MOONRISE[$c]}"
     echo "FASTRO_MOONSET[$c]=${FASTRO_MOONSET[$c]}"
-    echo "FASTRO_SUNPHASE[$c]=${FASTRO_SUNPHASE[$c]}"
+    echo "FASTRO_MOONPHASE[$c]=${FASTRO_MOONPHASE[$c]}"
     echo "FASTRO_MOON_ILLUMINATION[$c]=${FASTRO_MOON_ILLUMINATION[$c]}"
     echo "FASTRO_IS_MOON_UP[$c]=${FASTRO_IS_MOON_UP[$c]}"
     echo "FASTRO_IS_SUN_UP[$c]=${FASTRO_IS_SUN_UP[$c]}"
