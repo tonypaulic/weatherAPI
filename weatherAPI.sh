@@ -1,8 +1,10 @@
 #!/bin/bash
-
+# requires: wget jq imagemagick
+#
 # $1 = SITENAME
 # $2 = LATITUDE
 # $3 = LONGITUDE
+# $4 = API Key (https://www.weatherapi.com/signup.aspx)
 
 # test to see if the correct number of paramaters was passed
 if [ "$#" -ne 4 ]; then 
