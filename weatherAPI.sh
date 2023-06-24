@@ -178,9 +178,12 @@ case $UV in
     *)              UVSTR="Unknown"     ;;
 esac
 
+# download the weather image icon and resize it
+wget --quiet "http:$CONDITION_ICON" -O $CACHE_DIR/icon.png
+convert $CACHE_DIR/icon.png -resize 28x28 $CACHE_DIR/icon.png 
 
 # genmon
-echo "<img>http:$CONDITION_ICON</img><txt> $gTEMP$gTEMP_SUFFIX</txt>"
+echo "<img>$CACHE_DIR/icon.png</img><txt> $gTEMP$gTEMP_SUFFIX</txt>"
 echo "<click>exo-open $WEATHER_LINK</click><txtclick>exo-open $WEATHER_LINK</txtclick>"
 echo "<css></css>"
 echo -e "<tool><big>$SITENAME</big>
@@ -190,22 +193,22 @@ Feels Like:\t\t$gFEELSLIKE$gTEMP_SUFFIX
 
 Humidity:\t\t$HUMIDITY %
 Pressure:\t\t$gPRESSURE $gPRESSURE_SUFFIX
-UV:\t\t$UV ($UVSTR)
+UV:\t\t\t$UV ($UVSTR)
 
 Clouds:\t\t$CLOUD %
-Wind:\t\t$gWIND $gWIND_SUFFIX <small>from the</small>$WIND_DIR
-Gusting:\t$gGUST $gWIND_SUFFIX
+Wind:\t\t$gWIND $gWIND_SUFFIX <small>from the</small> $WIND_DIR
+Gusting:\t\t$gGUST $gWIND_SUFFIX
 
 Precipitation:\t${gFTOTALPRECIP[0]} $gPRECIP_SUFFIX
 
 Sunrise/set:\t${gFASTRO_SUNRISE[0]} / ${gFASTRO_SUNSET[0]}
 Moonphase:\t${FASTRO_MOONPHASE[0]} (${FASTRO_MOON_ILLUMINATION[0]} %)
 
-Today:\t${FCONDITION_TEXT[0]}, high: ${gFMAXTEMP[0]} low: ${gFMINTEMP[0]}
-Tomorrow:\t${FCONDITION_TEXT[1]}, high: ${gFMAXTEMP[1]}, low: ${gFMINTEMP[1]}
-Next Day:\t${FCONDITION_TEXT[2]}, high: ${gFMAXTEMP[2]}, low: ${gFMINTEMP[2]}
+Today:\t\t${FCONDITION_TEXT[0]}, high: ${gFMAXTEMP[0]} low: ${gFMINTEMP[0]}
+Tomorrow:\t\t${FCONDITION_TEXT[1]}, high: ${gFMAXTEMP[1]}, low: ${gFMINTEMP[1]}
+Next Day:\t\t${FCONDITION_TEXT[2]}, high: ${gFMAXTEMP[2]}, low: ${gFMINTEMP[2]}
 
-<small><i>$LAST_UPDATED</i></small></tool>"
+<small><i>Last updated: $LAST_UPDATED</i></small></tool>"
 
 exit 0
 
