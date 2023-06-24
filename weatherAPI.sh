@@ -16,6 +16,7 @@ fi
 # configurable items
 UNIT=metric             # metric or imperial
 WEATHER_LINK="https://www.weatherapi.com/weather/q/oshawa-ontario-canada-316180?loc=316180"
+IMAGE_SIZE=22           #22, 48, or 128
 
 # script globals 
 SITENAME="$1"
@@ -23,7 +24,7 @@ LATITUDE="$2"
 LONGITUDE="$3"
 API_KEY="$4"
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-IMAGES_DIR="$SCRIPT_DIR/icons"
+IMAGES_DIR="$SCRIPT_DIR/images/$IMAGE_SIZE"
 CACHE_DIR="$HOME/.cache/weatherAPI"
 CACHE_FILE="$CACHE_DIR/weather.tmp"
 H1="X-RapidAPI-Key: $API_KEY"
@@ -178,12 +179,28 @@ case $UV in
     *)              UVSTR="Unknown"     ;;
 esac
 
-# download the weather image icon and resize it
-wget --quiet "http:$CONDITION_ICON" -O $CACHE_DIR/icon.png
-convert $CACHE_DIR/icon.png -resize 28x28 $CACHE_DIR/icon.png 
+# prepare the icon to use
+case $CONDITION_CODE in
+    1006|1009)                                      [[ $IS_DAY -eq 1 ]] && ICON=cloud.png                  || ICON=cloud-night.png                 ;;    
+    1030|1135|1147)                                 [[ $IS_DAY -eq 1 ]] && ICON=fog.png                    || ICON=fog-night.png                   ;;
+    1153|1183)                                      [[ $IS_DAY -eq 1 ]] && ICON=lightrain.png              || ICON=lightrain-night.png             ;;
+    1063|1150|1180|1240)                            [[ $IS_DAY -eq 1 ]] && ICON=lightrainsun.png           || ICON=lightrainsun-night.png          ;;
+    1087)                                           [[ $IS_DAY -eq 1 ]] && ICON=lightrainthundersun.png    || ICON=lightrainthundersun-night.png   ;;
+    1003)                                           [[ $IS_DAY -eq 1 ]] && ICON=partlycloud.png            || ICON=partlycloud-night.png           ;;
+    1186|1189|1192|1195|1243|1246)                  [[ $IS_DAY -eq 1 ]] && ICON=rain.png                   || ICON=rain-night.png                  ;;
+    1273|289)                                       [[ $IS_DAY -eq 1 ]] && ICON=rainthunder.png            || ICON=rainthunder-night.png           ;;
+    1168|1171|1198|1201|1207|1237|1252|1261|1264)   [[ $IS_DAY -eq 1 ]] && ICON=sleet.png                  || ICON=sleet-night.png                 ;;
+    1069|1072|1204|1249|1276|1279)                  [[ $IS_DAY -eq 1 ]] && ICON=sleetsun.png               || ICON=sleetsun-night.png              ;;
+    1114|1117|1213|1219|1225|1258)                  [[ $IS_DAY -eq 1 ]] && ICON=snow.png                   || ICON=snow-night.png                  ;;
+    1066|1210|1216|1222|1255)                       [[ $IS_DAY -eq 1 ]] && ICON=snowsun.png                || ICON=snowsun-night.png               ;;
+    1282)                                           [[ $IS_DAY -eq 1 ]] && ICON=snowthunder.png            || ICON=snowthunder-night.png           ;;
+    1000)                                           [[ $IS_DAY -eq 1 ]] && ICON=sun.png                    || ICON=sun-night.png                   ;;
+    *) ICON=nodata.png
+esac
+gIMAGE="$IMAGES_DIR/$ICON"
 
 # genmon
-echo "<img>$CACHE_DIR/icon.png</img><txt> $gTEMP$gTEMP_SUFFIX</txt>"
+echo "<img>$gIMAGE</img><txt> $gTEMP$gTEMP_SUFFIX</txt>"
 echo "<click>exo-open $WEATHER_LINK</click><txtclick>exo-open $WEATHER_LINK</txtclick>"
 echo "<css>.genmon_imagebutton image {padding-bottom: 3px}</css>"
 echo -e "<tool><big>$SITENAME</big>
