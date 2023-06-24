@@ -5,6 +5,7 @@ This is a genmon bash script to query and display weather data using the weather
 **Requires:** xfce4-genmon-plugin wget jq 
    - imagemagick - if using weather images
    - weather icon set - if using images (https://github.com/kevin-hanselman/xfce4-weather-mono-icons) - note: these images are incuded here
+   - icon theme with weather icons - if USE_THEME_ICONS set
 
 Note: depending on the font your are using, you may need to adjust the number of "\t" (tabs) in the tooltip string to get the readings to line up properly.
 
