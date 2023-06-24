@@ -200,6 +200,7 @@ Wind:\t\t$gWIND $gWIND_SUFFIX <small>from the</small> $WIND_DIR
 Gusting:\t\t$gGUST $gWIND_SUFFIX
 
 Precipitation:\t${gFTOTALPRECIP[0]} $gPRECIP_SUFFIX
+Snow:\t\t${FTOTALSNOW_CM[0]} cm (${FDAILY_CHANCE_OF_SNOW[0]} %)
 
 Sunrise/set:\t${gFASTRO_SUNRISE[0]} / ${gFASTRO_SUNSET[0]}
 Moonphase:\t${FASTRO_MOONPHASE[0]} (${FASTRO_MOON_ILLUMINATION[0]} %)
