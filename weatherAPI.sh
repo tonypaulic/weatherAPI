@@ -16,6 +16,7 @@ fi
 # configurable items
 UNIT=metric             # metric or imperial
 WEATHER_LINK="https://www.weatherapi.com/weather/q/oshawa-ontario-canada-316180?loc=316180"
+USE_THEME_ICONS=0       # 0 = no (use images), 1 = yes, use icon theme's weather icons
 IMAGE_SIZE=22           #22, 48, or 128
 
 # script globals 
@@ -174,29 +175,57 @@ case $UV in
 esac
 
 # prepare the icon to use
-case $CONDITION_CODE in
-    1006|1009)                                      [[ $IS_DAY -eq 1 ]] && ICON=cloud.png                  || ICON=cloud-night.png                 ;;    
-    1030|1135|1147)                                 [[ $IS_DAY -eq 1 ]] && ICON=fog.png                    || ICON=fog-night.png                   ;;
-    1153|1183)                                      [[ $IS_DAY -eq 1 ]] && ICON=lightrain.png              || ICON=lightrain-night.png             ;;
-    1063|1150|1180|1240)                            [[ $IS_DAY -eq 1 ]] && ICON=lightrainsun.png           || ICON=lightrainsun-night.png          ;;
-    1087)                                           [[ $IS_DAY -eq 1 ]] && ICON=lightrainthundersun.png    || ICON=lightrainthundersun-night.png   ;;
-    1003)                                           [[ $IS_DAY -eq 1 ]] && ICON=partlycloud.png            || ICON=partlycloud-night.png           ;;
-    1186|1189|1192|1195|1243|1246)                  [[ $IS_DAY -eq 1 ]] && ICON=rain.png                   || ICON=rain-night.png                  ;;
-    1273|289)                                       [[ $IS_DAY -eq 1 ]] && ICON=rainthunder.png            || ICON=rainthunder-night.png           ;;
-    1168|1171|1198|1201|1207|1237|1252|1261|1264)   [[ $IS_DAY -eq 1 ]] && ICON=sleet.png                  || ICON=sleet-night.png                 ;;
-    1069|1072|1204|1249|1276|1279)                  [[ $IS_DAY -eq 1 ]] && ICON=sleetsun.png               || ICON=sleetsun-night.png              ;;
-    1114|1117|1213|1219|1225|1258)                  [[ $IS_DAY -eq 1 ]] && ICON=snow.png                   || ICON=snow-night.png                  ;;
-    1066|1210|1216|1222|1255)                       [[ $IS_DAY -eq 1 ]] && ICON=snowsun.png                || ICON=snowsun-night.png               ;;
-    1282)                                           [[ $IS_DAY -eq 1 ]] && ICON=snowthunder.png            || ICON=snowthunder-night.png           ;;
-    1000)                                           [[ $IS_DAY -eq 1 ]] && ICON=sun.png                    || ICON=sun-night.png                   ;;
-    *) ICON=nodata.png
-esac
-gIMAGE="$IMAGES_DIR/$ICON"
+if [ $USE_THEME_ICONS -eq 1 ]; then
+    case $CONDITION_CODE in
+        1006|1009)                                      ICON=weather-overcast-symbolic  ;;    
+        1030|1135|1147)                                 ICON=weather-fog-symbolic ;;
+        1153|1183)                                      ICON=weather-showers-scattered-symbolic ;;
+        1063|1150|1180|1240)                            ICON=weather-showers-scattered-symbolic ;;
+        1087)                                           ICON=weather-storm-symbolic ;;
+        1003)                                           [[ $IS_DAY -eq 1 ]] && ICON=weather-few-clouds-symbolic || ICON=weather-few-clouds-night-symbolic ;;
+        1186|1189|1192|1195|1243|1246)                  ICON=weather-showers-symbolic ;;
+        1273|289)                                       ICON=weather-storm-symbolic   ;;
+        1168|1171|1198|1201|1207|1237|1252|1261|1264)   ICON=weather-showers-symbolic ;;
+        1069|1072|1204|1249|1276|1279)                  ICON=weather-showers-scattered-symbolic ;;
+        1114|1117|1213|1219|1225|1258)                  ICON=weather-snow-symbolic ;;
+        1066|1210|1216|1222|1255)                       ICON=weather-snow-symbolic ;;
+        1282)                                           ICON=weather-storm-symbolic ;;
+        1000)                                           [[ $IS_DAY -eq 1 ]] && ICON=weather-clear-symbolic || ICON=weather-clear-night-symbolic           ;;
+        *) ICON=wheater-sever-alert-symbolic
+    esac
+    gICON=$ICON
+else
+    case $CONDITION_CODE in
+        1006|1009)                                      [[ $IS_DAY -eq 1 ]] && ICON=cloud.png                  || ICON=cloud-night.png                 ;;    
+        1030|1135|1147)                                 [[ $IS_DAY -eq 1 ]] && ICON=fog.png                    || ICON=fog-night.png                   ;;
+        1153|1183)                                      [[ $IS_DAY -eq 1 ]] && ICON=lightrain.png              || ICON=lightrain-night.png             ;;
+        1063|1150|1180|1240)                            [[ $IS_DAY -eq 1 ]] && ICON=lightrainsun.png           || ICON=lightrainsun-night.png          ;;
+        1087)                                           [[ $IS_DAY -eq 1 ]] && ICON=lightrainthundersun.png    || ICON=lightrainthundersun-night.png   ;;
+        1003)                                           [[ $IS_DAY -eq 1 ]] && ICON=partlycloud.png            || ICON=partlycloud-night.png           ;;
+        1186|1189|1192|1195|1243|1246)                  [[ $IS_DAY -eq 1 ]] && ICON=rain.png                   || ICON=rain-night.png                  ;;
+        1273|289)                                       [[ $IS_DAY -eq 1 ]] && ICON=rainthunder.png            || ICON=rainthunder-night.png           ;;
+        1168|1171|1198|1201|1207|1237|1252|1261|1264)   [[ $IS_DAY -eq 1 ]] && ICON=sleet.png                  || ICON=sleet-night.png                 ;;
+        1069|1072|1204|1249|1276|1279)                  [[ $IS_DAY -eq 1 ]] && ICON=sleetsun.png               || ICON=sleetsun-night.png              ;;
+        1114|1117|1213|1219|1225|1258)                  [[ $IS_DAY -eq 1 ]] && ICON=snow.png                   || ICON=snow-night.png                  ;;
+        1066|1210|1216|1222|1255)                       [[ $IS_DAY -eq 1 ]] && ICON=snowsun.png                || ICON=snowsun-night.png               ;;
+        1282)                                           [[ $IS_DAY -eq 1 ]] && ICON=snowthunder.png            || ICON=snowthunder-night.png           ;;
+        1000)                                           [[ $IS_DAY -eq 1 ]] && ICON=sun.png                    || ICON=sun-night.png                   ;;
+        *) ICON=nodata.png
+    esac
+    gIMAGE="$IMAGES_DIR/$ICON"
+fi
 
 # genmon
-echo "<img>$gIMAGE</img><txt> $gTEMP$gTEMP_SUFFIX</txt>"
-echo "<click>exo-open $WEATHER_LINK</click><txtclick>exo-open $WEATHER_LINK</txtclick>"
-echo "<css>.genmon_imagebutton image {padding-bottom: 3px}</css>"
+if [ $USE_THEME_ICONS -eq 1 ]; then
+    echo "<icon>$gICON</icon><<txt> $gTEMP$gTEMP_SUFFIX</txt>"
+    echo "<iconclick>exo-open $WEATHER_LINK</iconclick><txtclick>exo-open $WEATHER_LINK</txtclick>"
+    echo "<css></css>"    
+else
+    echo "<img>$gIMAGE</img><txt> $gTEMP$gTEMP_SUFFIX</txt>"
+    echo "<click>exo-open $WEATHER_LINK</click><txtclick>exo-open $WEATHER_LINK</txtclick>"
+    echo "<css>.genmon_imagebutton>image {padding-bottom: 3px}</css>"
+fi
+
 echo -e "<tool><big>$SITENAME</big>
 $gTEMP$gTEMP_SUFFIX <small>and</small> $CONDITION_TEXT
 
