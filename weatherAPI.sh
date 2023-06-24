@@ -1,5 +1,5 @@
 #!/bin/bash
-# requires: wget jq imagemagick
+# requires: xfce4-genmon-plugin wget jq imagemagick 
 # call: /path/to/script SITENAME LATITUDE LONGITUDE APIKEY
 #
 # $1 = SITENAME
