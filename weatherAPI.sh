@@ -104,7 +104,7 @@ do
     #FASTRO_MOONRISE[$c]=$(echo $CACHE | jq ".forecast.forecastday[$c].astro.moonrise" | tr -d \")
     #FASTRO_MOONSET[$c]=$(echo $CACHE | jq ".forecast.forecastday[$c].astro.moonset" | tr -d \")
     FASTRO_MOONPHASE[$c]=$(echo $CACHE | jq ".forecast.forecastday[$c].astro.moon_phase" | tr -d \")
-    FASTRO_MOON_ILLUMINATION[$c]=$(echo $CACHE | jq ".forecast.forecastday[$c].astro.moon_illumination" | tr -d \")
+    #FASTRO_MOON_ILLUMINATION[$c]=$(echo $CACHE | jq ".forecast.forecastday[$c].astro.moon_illumination" | tr -d \")
     #FASTRO_IS_MOON_UP[$c]=$(echo $CACHE | jq ".forecast.forecastday[$c].astro.is_moon_up" | tr -d \")
     #FASTRO_IS_SUN_UP[$c]=$(echo $CACHE | jq ".forecast.forecastday[$c].astro.is_sun_up" | tr -d \")
 done
@@ -214,7 +214,7 @@ Precipitation:\t${gFTOTALPRECIP[0]} $gPRECIP_SUFFIX <small>expected</small> (${F
 Snow:\t\t${FTOTALSNOW_CM[0]} cm <small>expected</small> (${FDAILY_CHANCE_OF_SNOW[0]} % <small>probability</small>)
 
 Sunrise/set:\t${gFASTRO_SUNRISE[0]} / ${gFASTRO_SUNSET[0]}
-Moonphase:\t${FASTRO_MOONPHASE[0]} (${FASTRO_MOON_ILLUMINATION[0]} %)
+Moonphase:\t${FASTRO_MOONPHASE[0]}
 
 Today:\t\t${FCONDITION_TEXT[0]}, high: ${gFMAXTEMP[0]} low: ${gFMINTEMP[0]}
 Tomorrow:\t\t${FCONDITION_TEXT[1]}, high: ${gFMAXTEMP[1]}, low: ${gFMINTEMP[1]}
