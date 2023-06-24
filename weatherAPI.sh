@@ -1,5 +1,6 @@
 #!/bin/bash
 # requires: wget jq imagemagick
+# call: /path/to/script SITENAME LATITUDE LONGITUDE APIKEY
 #
 # $1 = SITENAME
 # $2 = LATITUDE
