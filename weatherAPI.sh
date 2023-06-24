@@ -185,7 +185,7 @@ convert $CACHE_DIR/icon.png -resize 28x28 $CACHE_DIR/icon.png
 # genmon
 echo "<img>$CACHE_DIR/icon.png</img><txt> $gTEMP$gTEMP_SUFFIX</txt>"
 echo "<click>exo-open $WEATHER_LINK</click><txtclick>exo-open $WEATHER_LINK</txtclick>"
-echo "<css></css>"
+echo "<css>.genmon_imagebutton image {padding-bottom: 2px}</css>"
 echo -e "<tool><big>$SITENAME</big>
 $gTEMP$gTEMP_SUFFIX <small>and</small> $CONDITION_TEXT
 
