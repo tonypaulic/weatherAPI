@@ -1,7 +1,31 @@
 # weatherAPI
 
-https://rapidapi.com/weatherapi/api/weatherapi-com/
+This is a genmon bash script to query and display weather data using the weatherAPI (https://rapidapi.com/weatherapi/api/weatherapi-com/).
 
-Screenshot:
+**Requires:** xfce4-genmon-plugin wget jq 
+   - imagemagick - if using weather images
+   - weather icon set - if using images (https://github.com/kevin-hanselman/xfce4-weather-mono-icons) - note: these images are incuded here
+
+Note: depending on the font your are using, you may need to adjust the number of "\t" (tabs) in the tooltip string to get the readings to line up properly.
+
+**How To:**
+
+  1. Clone this repository to your local machine
+  2. edit the weatherAPI.sh script file and make any necessarry changes to the "configurable items" section:
+       - UNIT = 'metric' or 'imperial'
+       - WEATHER_LINK = the URL of webpage to open when plugin is clicked
+       - USE_THEME_ICONS = '1' if you want to use your icon theme's weather icons, '0' to use included images
+       - IMAGE_SIZE = 22, 48, or 128
+  4. Add the genmon plugin to the panel
+  5. Set in it's properties:
+     - command = /path/to/weatherAPI.sh SITENAME LATITUDE LONGITUDE APIKEY
+      - SITE is the name of your town/city
+      - LATITUDE/LONGITUDE - hopefully self explanatory
+      - APIKEY - you will need to register and obtain an APIKEY from https://rapidapi.com/weatherapi/api/weatherapi-com/
+  6. Uncheck label
+  7. Period = 900 (or whatever refresh value you want - weatherAPI allows 1 million refreshes per month with free subscription_
+  8. click on Save
+
+**Screenshot:**
 
 ![screenshot of plugin](screenshot.png)
