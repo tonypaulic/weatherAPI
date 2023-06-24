@@ -25,94 +25,88 @@ LONGITUDE="$3"
 API_KEY="$4"
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 IMAGES_DIR="$SCRIPT_DIR/images/$IMAGE_SIZE"
-CACHE_DIR="$HOME/.cache/weatherAPI"
-CACHE_FILE="$CACHE_DIR/weather.tmp"
 H1="X-RapidAPI-Key: $API_KEY"
 H2="X-RapidAPI-Host: weatherapi-com.p.rapidapi.com"
 OD="https://weatherapi-com.p.rapidapi.com/forecast.json?q=$LATITUDE%2C$LONGITUDE&days=3"
 
-# make sure tmp cache dir exists 
-[[ -d "$CACHE_DIR" ]] || mkdir -p $CACHE_DIR
-
 # call the weather API
-wget  --quiet \
-        --method GET \
-        --header "$H1" \
-        --header "$H2" \
-        --output-document \
-        - "$OD" \
-        -O $CACHE_FILE
+CACHE=$(wget    --quiet \
+                --method GET \
+                --header "$H1" \
+                --header "$H2" \
+                --output-document \
+                - "$OD") 
 
 #parse the results
-NAME=$(jq ".location.name" $CACHE_FILE | tr -d \")
-REGION=$(jq ".location.region" $CACHE_FILE | tr -d \")
-COUNTRY=$(jq ".location.country" $CACHE_FILE | tr -d \")
-LAT=$(jq ".location.lat" $CACHE_FILE | tr -d \")
-LON=$(jq ".location.lon" $CACHE_FILE | tr -d \")
-TIMEZONE=$(jq ".location.tz_id" $CACHE_FILE | tr -d \")
-LOCALTIME_EPOCH=$(jq ".location.localtime_epoch" $CACHE_FILE | tr -d \")
-LOCALTIME=$(jq ".location.localtime" $CACHE_FILE | tr -d \")
+NAME=$(echo $CACHE | jq ".location.name" | tr -d \")
+REGION=$(echo $CACHE | jq ".location.region" | tr -d \")
+COUNTRY=$(echo $CACHE | jq ".location.country" | tr -d \")
+LAT=$(echo $CACHE | jq ".location.lat" | tr -d \")
+LON=$(echo $CACHE | jq ".location.lon" | tr -d \")
+TIMEZONE=$(echo $CACHE | jq ".location.tz_id" | tr -d \")
+LOCALTIME_EPOCH=$(echo $CACHE | jq ".location.localtime_epoch" | tr -d \")
+LOCALTIME=$(echo $CACHE | jq ".location.localtime" | tr -d \")
 
-LAST_UPDATED_EPOCH=$(jq ".current.last_updated_epoch" $CACHE_FILE | tr -d \")
-LAST_UPDATED=$(jq ".current.last_updated" $CACHE_FILE | tr -d \")
-TEMP_C=$(jq ".current.temp_c" $CACHE_FILE | tr -d \")
-TEMP_F=$(jq ".current.temp_f" $CACHE_FILE | tr -d \")
-IS_DAY=$(jq ".current.is_day" $CACHE_FILE | tr -d \")
-CONDITION_TEXT=$(jq ".current.condition.text" $CACHE_FILE | tr -d \")
-CONDITION_ICON=$(jq ".current.condition.icon" $CACHE_FILE | tr -d \")
-CONDITION_CODE=$(jq ".current.condition.code" $CACHE_FILE | tr -d \")
-WIND_MPH=$(jq ".current.wind_mph" $CACHE_FILE | tr -d \")
-WIND_KPH=$(jq ".current.wind_kph" $CACHE_FILE | tr -d \")
-WIND_DEGREE=$(jq ".current.wind_degree" $CACHE_FILE | tr -d \")
-WIND_DIR=$(jq ".current.wind_dir" $CACHE_FILE | tr -d \" | sed -e 's/W/West/g' -e 's/E/East/g' -e 's/S/South/g' -e 's/N/North/g')
-PRESSURE_MB=$(jq ".current.pressure_mb" $CACHE_FILE | tr -d \")
-PRESSURE_IN=$(jq ".current.pressure_in" $CACHE_FILE | tr -d \")
-PRECIP_MM=$(jq ".current.precip_mm" $CACHE_FILE | tr -d \")
-PRECIP_IN=$(jq ".current.precip_in" $CACHE_FILE | tr -d \")
-HUMIDITY=$(jq ".current.humidity" $CACHE_FILE | tr -d \")
-CLOUD=$(jq ".current.cloud" $CACHE_FILE | tr -d \")
-FEELSLIKE_C=$(jq ".current.feelslike_c" $CACHE_FILE | tr -d \")
-FEELSLIKE_F=$(jq ".current.feelslike_f" $CACHE_FILE | tr -d \")
-VIS_KM=$(jq ".current.vis_km" $CACHE_FILE | tr -d \")
-VIS_MILES=$(jq ".current.vis_miles" $CACHE_FILE | tr -d \")
-UV=$(jq ".current.uv" $CACHE_FILE | tr -d \")
-GUST_MPH=$(jq ".current.gust_mph" $CACHE_FILE | tr -d \")
-GUST_KPH=$(jq ".current.gust_kph" $CACHE_FILE | tr -d \")
+LAST_UPDATED_EPOCH=$(echo $CACHE | jq ".current.last_updated_epoch" | tr -d \")
+LAST_UPDATED=$(echo $CACHE | jq ".current.last_updated" | tr -d \")
+TEMP_C=$(echo $CACHE | jq ".current.temp_c" | tr -d \")
+TEMP_F=$(echo $CACHE | jq ".current.temp_f" | tr -d \")
+IS_DAY=$(echo $CACHE | jq ".current.is_day" | tr -d \")
+CONDITION_TEXT=$(echo $CACHE | jq ".current.condition.text" | tr -d \")
+CONDITION_ICON=$(echo $CACHE | jq ".current.condition.icon" | tr -d \")
+CONDITION_CODE=$(echo $CACHE | jq ".current.condition.code" | tr -d \")
+WIND_MPH=$(echo $CACHE | jq ".current.wind_mph" | tr -d \")
+WIND_KPH=$(echo $CACHE | jq ".current.wind_kph" | tr -d \")
+WIND_DEGREE=$(echo $CACHE | jq ".current.wind_degree" | tr -d \")
+WIND_DIR=$(echo $CACHE | jq ".current.wind_dir" | tr -d \" | sed -e 's/W/West/g' -e 's/E/East/g' -e 's/S/South/g' -e 's/N/North/g')
+PRESSURE_MB=$(echo $CACHE | jq ".current.pressure_mb" | tr -d \")
+PRESSURE_IN=$(echo $CACHE | jq ".current.pressure_in" | tr -d \")
+PRECIP_MM=$(echo $CACHE | jq ".current.precip_mm" | tr -d \")
+PRECIP_IN=$(echo $CACHE | jq ".current.precip_in" | tr -d \")
+HUMIDITY=$(echo $CACHE | jq ".current.humidity" | tr -d \")
+CLOUD=$(echo $CACHE | jq ".current.cloud" | tr -d \")
+FEELSLIKE_C=$(echo $CACHE | jq ".current.feelslike_c" | tr -d \")
+FEELSLIKE_F=$(echo $CACHE | jq ".current.feelslike_f" | tr -d \")
+VIS_KM=$(echo $CACHE | jq ".current.vis_km" | tr -d \")
+VIS_MILES=$(echo $CACHE | jq ".current.vis_miles" | tr -d \")
+UV=$(echo $CACHE | jq ".current.uv" | tr -d \")
+GUST_MPH=$(echo $CACHE | jq ".current.gust_mph" | tr -d \")
+GUST_KPH=$(echo $CACHE | jq ".current.gust_kph" | tr -d \")
 
 for (( c=0; c<3; c++ ))
 do
-	FDATE[$c]=$(jq ".forecast.forecastday[$c].date" $CACHE_FILE | tr -d \")
-    FMAXTEMP_C[$c]=$(jq ".forecast.forecastday[$c].day.maxtemp_c" $CACHE_FILE | tr -d \")
-    FMAXTEMP_F[$c]=$(jq ".forecast.forecastday[$c].day.maxtemp_f" $CACHE_FILE | tr -d \")
-    FMINTEMP_C[$c]=$(jq ".forecast.forecastday[$c].day.mintemp_c" $CACHE_FILE | tr -d \")
-    FMINTEMP_F[$c]=$(jq ".forecast.forecastday[$c].day.mintemp_f" $CACHE_FILE | tr -d \")
-    FAVGTEMP_C[$c]=$(jq ".forecast.forecastday[$c].day.avgtemp_c" $CACHE_FILE | tr -d \")
-    FAVGTEMP_F[$c]=$(jq ".forecast.forecastday[$c].day.avgtemp_f" $CACHE_FILE | tr -d \")
-    FMAXWIND_MPH[$c]=$(jq ".forecast.forecastday[$c].day.maxwind_mph" $CACHE_FILE | tr -d \")
-    FMAXWIND_KPH[$c]=$(jq ".forecast.forecastday[$c].day.maxwind_kph" $CACHE_FILE | tr -d \")
-    FTOTALPRECIP_MM[$c]=$(jq ".forecast.forecastday[$c].day.totalprecip_mm" $CACHE_FILE | tr -d \")
-    FTOTALPRECIP_IN[$c]=$(jq ".forecast.forecastday[$c].day.totalprecip_in" $CACHE_FILE | tr -d \")
-    FTOTALSNOW_CM[$c]=$(jq ".forecast.forecastday[$c].day.totalsnow_cm" $CACHE_FILE | tr -d \")
-    FAVGVIS_KM[$c]=$(jq ".forecast.forecastday[$c].day.avgvis_km" $CACHE_FILE | tr -d \")
-    FAVGVIS_MILES[$c]=$(jq ".forecast.forecastday[$c].day.avgvis_miles" $CACHE_FILE | tr -d \")
-    FAVGHUMIDITY[$c]=$(jq ".forecast.forecastday[$c].day.avghumidity" $CACHE_FILE | tr -d \")
-    FDAILY_WILL_IT_RAIN[$c]=$(jq ".forecast.forecastday[$c].day.daily_will_it_rain" $CACHE_FILE | tr -d \")
-    FDAILY_CHANCE_OF_RAIN[$c]=$(jq ".forecast.forecastday[$c].day.daily_chance_of_rain" $CACHE_FILE | tr -d \")
-    FDAILY_WILL_IT_SNOW[$c]=$(jq ".forecast.forecastday[$c].day.daily_will_it_snow" $CACHE_FILE | tr -d \")
-    FDAILY_CHANCE_OF_SNOW[$c]=$(jq ".forecast.forecastday[$c].day.daily_chance_of_snow" $CACHE_FILE | tr -d \")
-    FDAILY_WILL_IT_RAIN[$c]=$(jq ".forecast.forecastday[$c].day.daily_will_it_rain" $CACHE_FILE | tr -d \")
-    FCONDITION_TEXT[$c]=$(jq ".forecast.forecastday[$c].day.condition.text" $CACHE_FILE | tr -d \")
-    FCONDITION_ICON[$c]=$(jq ".forecast.forecastday[$c].day.condition.icon" $CACHE_FILE | tr -d \")
-    FCONDITION_CODE[$c]=$(jq ".forecast.forecastday[$c].day.condition.code" $CACHE_FILE | tr -d \")
-    FUV[$c]=$(jq ".forecast.forecastday[$c].day.uv" $CACHE_FILE | tr -d \")
-    FASTRO_SUNRISE[$c]=$(jq ".forecast.forecastday[$c].astro.sunrise" $CACHE_FILE | tr -d \")
-    FASTRO_SUNSET[$c]=$(jq ".forecast.forecastday[$c].astro.sunset" $CACHE_FILE | tr -d \")
-    FASTRO_MOONRISE[$c]=$(jq ".forecast.forecastday[$c].astro.moonrise" $CACHE_FILE | tr -d \")
-    FASTRO_MOONSET[$c]=$(jq ".forecast.forecastday[$c].astro.moonset" $CACHE_FILE | tr -d \")
-    FASTRO_MOONPHASE[$c]=$(jq ".forecast.forecastday[$c].astro.moon_phase" $CACHE_FILE | tr -d \")
-    FASTRO_MOON_ILLUMINATION[$c]=$(jq ".forecast.forecastday[$c].astro.moon_illumination" $CACHE_FILE | tr -d \")
-    FASTRO_IS_MOON_UP[$c]=$(jq ".forecast.forecastday[$c].astro.is_moon_up" $CACHE_FILE | tr -d \")
-    FASTRO_IS_SUN_UP[$c]=$(jq ".forecast.forecastday[$c].astro.is_sun_up" $CACHE_FILE | tr -d \")
+	FDATE[$c]=$(echo $CACHE | jq ".forecast.forecastday[$c].date" | tr -d \")
+    FMAXTEMP_C[$c]=$(echo $CACHE | jq ".forecast.forecastday[$c].day.maxtemp_c" | tr -d \")
+    FMAXTEMP_F[$c]=$(echo $CACHE | jq ".forecast.forecastday[$c].day.maxtemp_f" | tr -d \")
+    FMINTEMP_C[$c]=$(echo $CACHE | jq ".forecast.forecastday[$c].day.mintemp_c" | tr -d \")
+    FMINTEMP_F[$c]=$(echo $CACHE | jq ".forecast.forecastday[$c].day.mintemp_f" | tr -d \")
+    FAVGTEMP_C[$c]=$(echo $CACHE | jq ".forecast.forecastday[$c].day.avgtemp_c" | tr -d \")
+    FAVGTEMP_F[$c]=$(echo $CACHE | jq ".forecast.forecastday[$c].day.avgtemp_f" | tr -d \")
+    FMAXWIND_MPH[$c]=$(echo $CACHE | jq ".forecast.forecastday[$c].day.maxwind_mph" | tr -d \")
+    FMAXWIND_KPH[$c]=$(echo $CACHE | jq ".forecast.forecastday[$c].day.maxwind_kph" | tr -d \")
+    FTOTALPRECIP_MM[$c]=$(echo $CACHE | jq ".forecast.forecastday[$c].day.totalprecip_mm" | tr -d \")
+    FTOTALPRECIP_IN[$c]=$(echo $CACHE | jq ".forecast.forecastday[$c].day.totalprecip_in" | tr -d \")
+    FTOTALSNOW_CM[$c]=$(echo $CACHE | jq ".forecast.forecastday[$c].day.totalsnow_cm" | tr -d \")
+    FAVGVIS_KM[$c]=$(echo $CACHE | jq ".forecast.forecastday[$c].day.avgvis_km" | tr -d \")
+    FAVGVIS_MILES[$c]=$(echo $CACHE | jq ".forecast.forecastday[$c].day.avgvis_miles" | tr -d \")
+    FAVGHUMIDITY[$c]=$(echo $CACHE | jq ".forecast.forecastday[$c].day.avghumidity" | tr -d \")
+    FDAILY_WILL_IT_RAIN[$c]=$(echo $CACHE | jq ".forecast.forecastday[$c].day.daily_will_it_rain" | tr -d \")
+    FDAILY_CHANCE_OF_RAIN[$c]=$(echo $CACHE | jq ".forecast.forecastday[$c].day.daily_chance_of_rain" | tr -d \")
+    FDAILY_WILL_IT_SNOW[$c]=$(echo $CACHE | jq ".forecast.forecastday[$c].day.daily_will_it_snow" | tr -d \")
+    FDAILY_CHANCE_OF_SNOW[$c]=$(echo $CACHE | jq ".forecast.forecastday[$c].day.daily_chance_of_snow" | tr -d \")
+    FDAILY_WILL_IT_RAIN[$c]=$(echo $CACHE | jq ".forecast.forecastday[$c].day.daily_will_it_rain" | tr -d \")
+    FCONDITION_TEXT[$c]=$(echo $CACHE | jq ".forecast.forecastday[$c].day.condition.text" | tr -d \")
+    FCONDITION_ICON[$c]=$(echo $CACHE | jq ".forecast.forecastday[$c].day.condition.icon" | tr -d \")
+    FCONDITION_CODE[$c]=$(echo $CACHE | jq ".forecast.forecastday[$c].day.condition.code" | tr -d \")
+    FUV[$c]=$(echo $CACHE | jq ".forecast.forecastday[$c].day.uv" | tr -d \")
+    FASTRO_SUNRISE[$c]=$(echo $CACHE | jq ".forecast.forecastday[$c].astro.sunrise" | tr -d \")
+    FASTRO_SUNSET[$c]=$(echo $CACHE | jq ".forecast.forecastday[$c].astro.sunset" | tr -d \")
+    FASTRO_MOONRISE[$c]=$(echo $CACHE | jq ".forecast.forecastday[$c].astro.moonrise" | tr -d \")
+    FASTRO_MOONSET[$c]=$(echo $CACHE | jq ".forecast.forecastday[$c].astro.moonset" | tr -d \")
+    FASTRO_MOONPHASE[$c]=$(echo $CACHE | jq ".forecast.forecastday[$c].astro.moon_phase" | tr -d \")
+    FASTRO_MOON_ILLUMINATION[$c]=$(echo $CACHE | jq ".forecast.forecastday[$c].astro.moon_illumination" | tr -d \")
+    FASTRO_IS_MOON_UP[$c]=$(echo $CACHE | jq ".forecast.forecastday[$c].astro.is_moon_up" | tr -d \")
+    FASTRO_IS_SUN_UP[$c]=$(echo $CACHE | jq ".forecast.forecastday[$c].astro.is_sun_up" | tr -d \")
 done
 
 # unit processing - prepare metric or imperial measurement
