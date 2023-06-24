@@ -7,19 +7,19 @@
 # $3 = LONGITUDE
 # $4 = API Key (https://www.weatherapi.com/signup.aspx)
 
-# test to see if the correct number of paramaters was passed
+##### test to see if the correct number of paramaters was passed
 if [ "$#" -ne 4 ]; then 
 	echo "Usage: $0 SITENAME LATITUDE LONGITUDE APIKEY"
 	exit 1
 fi
 
-# configurable items
+##### configurable items
 UNIT=metric             # metric or imperial
 WEATHER_LINK="https://www.weatherapi.com/weather/q/oshawa-ontario-canada-316180?loc=316180"
 USE_THEME_ICONS=0       # 0 = no (use images), 1 = yes, use icon theme's weather icons
 IMAGE_SIZE=22           #22, 48, or 128
 
-# script globals 
+##### script globals 
 SITENAME="$1"
 LATITUDE="$2"
 LONGITUDE="$3"
@@ -30,7 +30,7 @@ H1="X-RapidAPI-Key: $API_KEY"
 H2="X-RapidAPI-Host: weatherapi-com.p.rapidapi.com"
 OD="https://weatherapi-com.p.rapidapi.com/forecast.json?q=$LATITUDE%2C$LONGITUDE&days=3"
 
-# call the weather API
+##### call the weather API
 CACHE=$(wget    --quiet \
                 --method GET \
                 --header "$H1" \
@@ -38,7 +38,7 @@ CACHE=$(wget    --quiet \
                 --output-document \
                 - "$OD") 
 
-#parse the results
+##### parse the results
 NAME=$(echo $CACHE | jq ".location.name" | tr -d \")
 #REGION=$(echo $CACHE | jq ".location.region" | tr -d \")
 #COUNTRY=$(echo $CACHE | jq ".location.country" | tr -d \")
@@ -47,7 +47,6 @@ NAME=$(echo $CACHE | jq ".location.name" | tr -d \")
 #TIMEZONE=$(echo $CACHE | jq ".location.tz_id" | tr -d \")
 #LOCALTIME_EPOCH=$(echo $CACHE | jq ".location.localtime_epoch" | tr -d \")
 #LOCALTIME=$(echo $CACHE | jq ".location.localtime" | tr -d \")
-
 #LAST_UPDATED_EPOCH=$(echo $CACHE | jq ".current.last_updated_epoch" | tr -d \")
 LAST_UPDATED=$(echo $CACHE | jq ".current.last_updated" | tr -d \")
 TEMP_C=$(echo $CACHE | jq ".current.temp_c" | tr -d \")
@@ -110,7 +109,7 @@ do
     #FASTRO_IS_SUN_UP[$c]=$(echo $CACHE | jq ".forecast.forecastday[$c].astro.is_sun_up" | tr -d \")
 done
 
-# unit processing - prepare metric or imperial measurement
+##### unit processing - prepare metric or imperial measurement
 case $UNIT in
     metric)
         gTEMP_SUFFIX="°C"
@@ -164,7 +163,7 @@ case $UNIT in
     ;;
 esac
 
-# parse uvindex value into text
+##### parse uvindex value into text
 case $UV in
     [0-2])          UVSTR="Low"         ;;
     [3-5])          UVSTR="Moderate"    ;;
@@ -174,7 +173,7 @@ case $UV in
     *)              UVSTR="Unknown"     ;;
 esac
 
-# prepare the icon to use
+##### prepare the icon to use
 if [ $USE_THEME_ICONS -eq 1 ]; then
     case $CONDITION_CODE in
         1006|1009)                                      ICON=weather-overcast-symbolic  ;;    
@@ -215,7 +214,7 @@ else
     gIMAGE="$IMAGES_DIR/$ICON"
 fi
 
-# genmon
+##### genmon
 if [ $USE_THEME_ICONS -eq 1 ]; then
     echo "<icon>$gICON</icon><<txt> $gTEMP$gTEMP_SUFFIX</txt>"
     echo "<iconclick>exo-open $WEATHER_LINK</iconclick><txtclick>exo-open $WEATHER_LINK</txtclick>"
@@ -253,7 +252,7 @@ Next Day:\t\t${FCONDITION_TEXT[2]}, high: ${gFMAXTEMP[2]}, low: ${gFMINTEMP[2]}
 
 exit 0
 
-# debug
+##### debug
 echo "NAME=$NAME"
 echo "REGION=$REGION"
 echo "COUNTRY=$COUNTRY"
