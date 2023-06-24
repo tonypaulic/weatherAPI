@@ -168,9 +168,6 @@ case $UNIT in
     ;;
 esac
 
-# format dates
-
-
 # parse uvindex value into text
 case $UV in
     [0-2])          UVSTR="Low"         ;;
