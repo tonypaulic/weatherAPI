@@ -14,6 +14,7 @@ if [ "$#" -ne 4 ]; then
 fi
 
 ##### configurable items
+USE_SITEID=1            # whether to use the SITEID provided, or the location names as returned by the API
 UNIT=metric             # metric or imperial
 WEATHER_LINK="https://www.weatherapi.com/weather/q/oshawa-ontario-canada-316180?loc=316180"
 USE_THEME_ICONS=0       # 0 = no (use images), 1 = yes, use icon theme's weather icons
@@ -214,6 +215,9 @@ else
     gIMAGE="$IMAGES_DIR/$ICON"
 fi
 
+# choose which site name to use in tooltip
+[[ $USE_SITEID = 1 ]] && gNAME=$SITENAME || gNAME=$NAME
+
 ##### genmon
 if [ $USE_THEME_ICONS -eq 1 ]; then
     echo "<icon>$gICON</icon><<txt> $gTEMP$gTEMP_SUFFIX</txt>"
@@ -225,7 +229,7 @@ else
     echo "<css>.genmon_imagebutton>image {padding-bottom: 3px}</css>"
 fi
 
-echo -e "<tool><big>$SITENAME</big>
+echo -e "<tool><big>$gNAME</big>
 $gTEMP$gTEMP_SUFFIX <small>and</small> $CONDITION_TEXT
 
 Feels Like:\t\t$gFEELSLIKE$gTEMP_SUFFIX
