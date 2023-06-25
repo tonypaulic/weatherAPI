@@ -13,6 +13,7 @@ Note: depending on the font your are using, you may need to adjust the number of
 
   1. Clone this repository to your local machine
   2. edit the weatherAPI.sh script file and make any necessarry changes to the "configurable items" section:
+       - USE_SITEID = whether to use the SITE name you pass in to this command (1) or the one returned by the API (0)
        - UNIT = 'metric' or 'imperial'
        - WEATHER_LINK = the URL of webpage to open when plugin is clicked
        - USE_THEME_ICONS = '1' if you want to use your icon theme's weather icons, '0' to use included images
