@@ -105,7 +105,7 @@ do
         #FASTRO_IS_SUN_UP[$c]=$(echo $CACHE | jq ".forecast.forecastday[$c].astro.is_sun_up" | tr -d \")
 done
 
-##### unit processing - prepare metric (default) or imperial measurement
+##### unit processing - prepare metric or imperial measurement
 [[ $UNIT == "imperial" ]] && gTEMP_SUFFIX="°F"          || gTEMP_SUFFIX="°C"
 [[ $UNIT == "imperial" ]] && gWIND_SUFFIX="mph"         || gWIND_SUFFIX="kph"
 [[ $UNIT == "imperial" ]] && gPRESSURE_SUFFIX="in"      || gPRESSURE_SUFFIX="mb"
