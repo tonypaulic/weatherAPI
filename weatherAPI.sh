@@ -110,59 +110,38 @@ do
         #FASTRO_IS_SUN_UP[$c]=$(echo $CACHE | jq ".forecast.forecastday[$c].astro.is_sun_up" | tr -d \")
 done
 
-##### unit processing - prepare metric or imperial measurement
-case $UNIT in
-    metric)
-        gTEMP_SUFFIX="°C"
-        gWIND_SUFFIX="kph"
-        gPRESSURE_SUFFIX="mb"
-        gPRECIP_SUFFIX="mm"
-        gVIS_SUFFIX="km"
-        gTEMP=$TEMP_C
-        gWIND=$WIND_KPH
-        gPRESSURE=$PRESSURE_MB
-        gPRECIP=$PRECIP_MM
-        gFEELSLIKE=$FEELSLIKE_C
-        gVIS=$VIS_KM
-        gGUST=$GUST_KPH
-        for (( c=0; c<3; c++ ))
-        do
-            gFMAXTEMP[$c]=${FMAXTEMP_C[$c]}
-            gFMINTEMP[$c]=${FMINTEMP_C[$c]}
-            gFAVGTEMP[$c]=${FAVGTEMP_C[$c]}
-            gFMAXWIND[$c]=${FMAXWIND_KPH[$c]}
-            gFTOTALPRECIP[$c]=${FTOTALPRECIP_MM[$c]}
-            gFAVGVIS[$c]=${FAVGVIS_KM[$c]}
-            gFASTRO_SUNRISE[$c]=$(date -d "${FASTRO_SUNRISE[$c]}" "+%-I:%M%P")
-            gFASTRO_SUNSET[$c]=$(date -d "${FASTRO_SUNSET[$c]}" "+%-I:%M%P")
-        done
-    ;;
-    imperial)
-        gTEMP_SUFFIX="°F"
-        gWIND_SUFFIX="mph"
-        gPRESSURE_SUFFIX="in"
-        gPRECIP_SUFFIX="in"
-        gVIS_SUFFIX="miles"
-        gTEMP=$TEMP_F
-        gWIND=$WIND_MPH
-        gPRESSURE=$PRESSURE_IN
-        gPRECIP=$PRECIP_IN
-        gFEELSLIKE=$FEELSLIKE_F
-        gVIS=$VIS_MILES
-        gGUST=$GUST_MPH
-        for (( c=0; c<3; c++ ))
-        do
-            gFMAXTEMP[c$]=${FMAXTEMP_F[$c]}
-            gFMINTEMP[c$]=${FMINTEMP_F[$c]}
-            gFAVGTEMP[c$]=${FAVGTEMP_F[$c]}
-            gFMAXWIND[c$]=${FMAXWIND_MPH[$c]}
-            gFTOTALPRECIP[$c]=${FTOTALPRECIP_IN[$c]}
-            gFAVGVIS[$c]=${FAVGVIS_MILES[$c]}
-            gFASTRO_SUNRISE[$c]=$(date -d "${FASTRO_SUNRISE[$c]}" "+%-I:%M%P")
-            gFASTRO_SUNSET[$c]=$(date -d "${FASTRO_SUNSET[$c]}" "+%-I:%M%P")
-        done
-    ;;
-esac
+##### unit processing - prepare metric (default) or imperial measurement
+[[ $UNIT == "imperial" ]] && gTEMP_SUFFIX="°F"          || gTEMP_SUFFIX="°C"
+[[ $UNIT == "imperial" ]] && gWIND_SUFFIX="mph"         || gWIND_SUFFIX="kph"
+[[ $UNIT == "imperial" ]] && gPRESSURE_SUFFIX="in"      || gPRESSURE_SUFFIX="mb"
+[[ $UNIT == "imperial" ]] && gPRECIP_SUFFIX="in"        || gPRECIP_SUFFIX="mm"
+    #[[ $UNIT == "imperial" ]] && gVIS_SUFFIX="miles"        || gVIS_SUFFIX="km"
+[[ $UNIT == "imperial" ]] && gTEMP=$TEMP_F              || gTEMP=$TEMP_C
+[[ $UNIT == "imperial" ]] && gWIND=$WIND_MPH            || gWIND=$WIND_KPH
+[[ $UNIT == "imperial" ]] && gPRESSURE=$PRESSURE_IN     || gPRESSURE=$PRESSURE_MB
+[[ $UNIT == "imperial" ]] && gPRECIP=$PRECIP_IN         || gPRECIP=$PRECIP_MM
+[[ $UNIT == "imperial" ]] && gFEELSLIKE=$FEELSLIKE_F    || gFEELSLIKE=$FEELSLIKE_C
+    #[[ $UNIT == "imperial" ]] && gVIS=$VIS_MILES            || gVIS=$VIS_KM
+[[ $UNIT == "imperial" ]] && gGUST=$GUST_MPH            || gGUST=$GUST_KPH
+for (( c=0; c<3; c++ ))
+do
+    [[ $UNIT == "imperial" ]] && gFMAXTEMP[c$]=${FMAXTEMP_F[$c]} \
+                              || gFMAXTEMP[$c]=${FMAXTEMP_C[$c]}
+    [[ $UNIT == "imperial" ]] && gFMINTEMP[c$]=${FMINTEMP_F[$c]} \
+                              || gFMINTEMP[$c]=${FMINTEMP_C[$c]}
+        #[[ $UNIT == "imperial" ]] && gFAVGTEMP[c$]=${FAVGTEMP_F[$c]} \
+        #                          || gFAVGTEMP[$c]=${FAVGTEMP_C[$c]}
+        #[[ $UNIT == "imperial" ]] && gFMAXWIND[c$]=${FMAXWIND_MPH[$c]} \
+        #                          || gFMAXWIND[$c]=${FMAXWIND_KPH[$c]}
+    [[ $UNIT == "imperial" ]] && gFTOTALPRECIP[$c]=${FTOTALPRECIP_IN[$c]} \
+                              || gFTOTALPRECIP[$c]=${FTOTALPRECIP_MM[$c]}
+        #[[ $UNIT == "imperial" ]] && gFAVGVIS[$c]=${FAVGVIS_MILES[$c]} \
+        #                          || gFAVGVIS[$c]=${FAVGVIS_KM[$c]}
+    [[ $UNIT == "imperial" ]] && gFASTRO_SUNRISE[$c]=$(date -d "${FASTRO_SUNRISE[$c]}" "+%-I:%M%P") \
+                              || gFASTRO_SUNRISE[$c]=$(date -d "${FASTRO_SUNRISE[$c]}" "+%-I:%M%P")
+    [[ $UNIT == "imperial" ]] && gFASTRO_SUNSET[$c]=$(date -d "${FASTRO_SUNSET[$c]}" "+%-I:%M%P") \
+                              || gFASTRO_SUNSET[$c]=$(date -d "${FASTRO_SUNSET[$c]}" "+%-I:%M%P")
+done
 
 ##### parse uvindex value into text
 case $UV in
@@ -182,7 +161,7 @@ if [ $USE_THEME_ICONS -eq 1 ]; then
         1153|1183)                                      ICON=weather-showers-scattered-symbolic ;;
         1063|1150|1180|1240)                            ICON=weather-showers-scattered-symbolic ;;
         1087)                                           ICON=weather-storm-symbolic ;;
-        1003)                                           [[ $IS_DAY -eq 1 ]] && ICON=weather-few-clouds-symbolic || ICON=weather-few-clouds-night-symbolic ;;
+        1003) [[ $IS_DAY -eq 1 ]] && ICON=weather-few-clouds-symbolic || ICON=weather-few-clouds-night-symbolic ;;
         1186|1189|1192|1195|1243|1246)                  ICON=weather-showers-symbolic ;;
         1273|289)                                       ICON=weather-storm-symbolic   ;;
         1168|1171|1198|1201|1207|1237|1252|1261|1264)   ICON=weather-showers-symbolic ;;
@@ -190,8 +169,8 @@ if [ $USE_THEME_ICONS -eq 1 ]; then
         1114|1117|1213|1219|1225|1258)                  ICON=weather-snow-symbolic ;;
         1066|1210|1216|1222|1255)                       ICON=weather-snow-symbolic ;;
         1282)                                           ICON=weather-storm-symbolic ;;
-        1000)                                           [[ $IS_DAY -eq 1 ]] && ICON=weather-clear-symbolic || ICON=weather-clear-night-symbolic           ;;
-        *) ICON=wheater-sever-alert-symbolic
+        1000) [[ $IS_DAY -eq 1 ]] && ICON=weather-clear-symbolic || ICON=weather-clear-night-symbolic ;;
+        *) ICON=wheather-severe-alert-symbolic
     esac
     gICON=$ICON
 else
