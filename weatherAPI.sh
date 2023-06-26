@@ -16,9 +16,9 @@ fi
 ##### configurable items
 USE_SITEID=1            # whether to use the SITEID provided, or the location names as returned by the API
 UNIT=metric             # metric or imperial
-WEATHER_LINK="https://www.weatherapi.com/weather/q/oshawa-ontario-canada-316180?loc=316180"
 USE_THEME_ICONS=0       # 0 = no (use images), 1 = yes, use icon theme's weather icons
-IMAGE_SIZE=22           #22, 48, or 128
+IMAGE_SIZE=22           # 22, 48, or 128
+WEATHER_LINK="https://www.weatherapi.com/weather/q/oshawa-ontario-canada-316180?loc=316180"
 
 ##### script globals 
 SITENAME="$1"
@@ -118,6 +118,7 @@ done
 [[ $UNIT == "imperial" ]] && gFEELSLIKE=$FEELSLIKE_F    || gFEELSLIKE=$FEELSLIKE_C
     #[[ $UNIT == "imperial" ]] && gVIS=$VIS_MILES            || gVIS=$VIS_KM
 [[ $UNIT == "imperial" ]] && gGUST=$GUST_MPH            || gGUST=$GUST_KPH
+
 for (( c=0; c<3; c++ ))
 do
     [[ $UNIT == "imperial" ]] && gFMAXTEMP[c$]=${FMAXTEMP_F[$c]} \
@@ -140,12 +141,12 @@ done
 
 ##### parse uvindex value into text
 case $UV in
-    [0-2])          UVSTR="Low"         ;;
-    [3-5])          UVSTR="Moderate"    ;;
-    [6-7])          UVSTR="High"        ;;
-    [8-9]|10)       UVSTR="Very high"   ;;
-    11|12)          UVSTR="Extreme"     ;;
-    *)              UVSTR="Unknown"     ;;
+    [0-2])      UVSTR="Low"       ;;
+    [3-5])      UVSTR="Moderate"  ;;
+    [6-7])      UVSTR="High"      ;;
+    [8-9]|10)   UVSTR="Very high" ;;
+    11|12)      UVSTR="Extreme"   ;;
+    *)          UVSTR="Unknown"   ;;
 esac
 
 ##### prepare the icon to use
