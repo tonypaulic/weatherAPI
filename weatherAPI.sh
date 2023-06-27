@@ -190,6 +190,19 @@ else
     gIMAGE="$IMAGES_DIR/$ICON"
 fi
 
+# process moon phase glyph (https://www.unicode.org/L2/L2017/17304-moon-var.pdf)
+case ${FASTRO_MOONPHASE[0]} in
+    "New Moon")         [[ $LATITUDE = ^-.* ]] && SYMBOL="0001F311" || SYMBOL="0001F315"    ;;
+    "Waning Crescent")  [[ $LATITUDE = ^-.* ]] && SYMBOL="0001F312" || SYMBOL="0001F314"    ;;
+    "Last Quarter")     [[ $LATITUDE = ^-.* ]] && SYMBOL="0001F313" || SYMBOL="0001F313"    ;;
+    "Waning Gibbous")   [[ $LATITUDE = ^-.* ]] && SYMBOL="0001F314" || SYMBOL="0001F312"    ;;
+    "Full Moon")        [[ $LATITUDE = ^-.* ]] && SYMBOL="0001F315" || SYMBOL="0001F311"    ;;
+    "Waxing Gibbous")   [[ $LATITUDE = ^-.* ]] && SYMBOL="0001F316" || SYMBOL="0001F318"    ;;
+    "First Quarter")    [[ $LATITUDE = ^-.* ]] && SYMBOL="0001F317" || SYMBOL="0001F317"    ;;
+    "Waxing Crescent")  [[ $LATITUDE = ^-.* ]] && SYMBOL="0001F318" || SYMBOL="0001F316"    ;;
+    *)                  SYMBOL="X" ;;
+esac
+
 # choose which site name to use in tooltip
 [[ $USE_SITEID = 1 ]] && gNAME=$SITENAME || gNAME=$NAME
 
@@ -221,7 +234,7 @@ Precipitation:\t${gFTOTALPRECIP[0]} $gPRECIP_SUFFIX <small>expected</small> (${F
 Snow:\t\t${FTOTALSNOW_CM[0]} cm <small>expected</small> (${FDAILY_CHANCE_OF_SNOW[0]} % <small>probability</small>)
 
 Sunrise/set:\t${gFASTRO_SUNRISE[0]} / ${gFASTRO_SUNSET[0]}
-Moonphase:\t${FASTRO_MOONPHASE[0]} (${FASTRO_MOON_ILLUMINATION[0]} % <small>illuminated</small>)
+Moonphase:\t\U$SYMBOL ${FASTRO_MOONPHASE[0]} (${FASTRO_MOON_ILLUMINATION[0]} % <small>illuminated</small>)
 
 Today:\t\t${FCONDITION_TEXT[0]}, high: ${gFMAXTEMP[0]} low: ${gFMINTEMP[0]}
 Tomorrow:\t\t${FCONDITION_TEXT[1]}, high: ${gFMAXTEMP[1]}, low: ${gFMINTEMP[1]}
