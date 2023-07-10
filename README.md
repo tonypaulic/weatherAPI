@@ -30,4 +30,4 @@ Note: depending on the font your are using, you may need to adjust the number of
 
 **Screenshot:**
 
-![screenshot of plugin](screenshot.png)
+![screenshot of plugin](screen.png)
