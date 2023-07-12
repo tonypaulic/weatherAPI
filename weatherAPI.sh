@@ -222,19 +222,19 @@ $gTEMP$gTEMP_SUFFIX <small>and</small> $CONDITION_TEXT
 
 Feels Like:\t\t$gFEELSLIKE$gTEMP_SUFFIX
 
-Humidity:\t\t$HUMIDITY %
+Humidity:\t\t$HUMIDITY%
 Pressure:\t\t$gPRESSURE $gPRESSURE_SUFFIX
 UV:\t\t\t$UV ($UVSTR)
 
-Clouds:\t\t$CLOUD %
+Clouds:\t\t$CLOUD%
 Wind:\t\t$gWIND $gWIND_SUFFIX <small>from the</small> $WIND_DIR
 Gusting:\t\t$gGUST $gWIND_SUFFIX
  
-Precipitation:\t${gFTOTALPRECIP[0]} $gPRECIP_SUFFIX <small>expected</small> (${FDAILY_CHANCE_OF_RAIN[0]} % <small>probability</small>)
+Precipitation:\t${gFTOTALPRECIP[0]} $gPRECIP_SUFFIX <small>expected</small> (${FDAILY_CHANCE_OF_RAIN[0]}% <small>probability</small>)
 Snow:\t\t${FTOTALSNOW_CM[0]} cm
 
 Sunrise/set:\t${gFASTRO_SUNRISE[0]} / ${gFASTRO_SUNSET[0]}
-Moonphase:\t\U$SYMBOL ${FASTRO_MOONPHASE[0]} (${FASTRO_MOON_ILLUMINATION[0]} % <small>illuminated</small>)
+Moonphase:\t\U$SYMBOL ${FASTRO_MOONPHASE[0]} (${FASTRO_MOON_ILLUMINATION[0]}% <small>illuminated</small>)
 
 Today:\t\t${FCONDITION_TEXT[0]}, high: ${gFMAXTEMP[0]} low: ${gFMINTEMP[0]}
 Tomorrow:\t\t${FCONDITION_TEXT[1]}, high: ${gFMAXTEMP[1]}, low: ${gFMINTEMP[1]}
