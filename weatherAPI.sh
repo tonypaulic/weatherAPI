@@ -32,7 +32,7 @@ H2="X-RapidAPI-Host: weatherapi-com.p.rapidapi.com"
 OD="https://weatherapi-com.p.rapidapi.com/forecast.json?q=$LATITUDE%2C$LONGITUDE&days=3"
 
 ##### call the weather API
-CACHE=$(wget --quiet --method GET --header "$H1" --header "$H2" --output-document - "$OD") 
+CACHE=$(wget --quiet --method GET --header "$H1" --header "$H2" --output-document - "$OD")
 
 ##### parse the results
 NAME=$(echo $CACHE | jq ".location.name" | tr -d \")
