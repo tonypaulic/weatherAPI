@@ -159,7 +159,7 @@ if [ $USE_THEME_ICONS -eq 1 ]; then
         1087)                                           ICON=weather-storm-symbolic ;;
         1003) [[ $IS_DAY -eq 1 ]] && ICON=weather-few-clouds-symbolic || ICON=weather-few-clouds-night-symbolic ;;
         1186|1189|1192|1195|1243|1246)                  ICON=weather-showers-symbolic ;;
-        1273|289)                                       ICON=weather-storm-symbolic   ;;
+        1273|1289)                                      ICON=weather-storm-symbolic   ;;
         1168|1171|1198|1201|1207|1237|1252|1261|1264)   ICON=weather-showers-symbolic ;;
         1069|1072|1204|1249|1276|1279)                  ICON=weather-showers-scattered-symbolic ;;
         1114|1117|1213|1219|1225|1258)                  ICON=weather-snow-symbolic ;;
@@ -178,7 +178,7 @@ else
         1087)                                           [[ $IS_DAY -eq 1 ]] && ICON=lightrainthundersun.png    || ICON=lightrainthundersun-night.png   ;;
         1003)                                           [[ $IS_DAY -eq 1 ]] && ICON=partlycloud.png            || ICON=partlycloud-night.png           ;;
         1186|1189|1192|1195|1243|1246)                  [[ $IS_DAY -eq 1 ]] && ICON=rain.png                   || ICON=rain-night.png                  ;;
-        1273|289)                                       [[ $IS_DAY -eq 1 ]] && ICON=rainthunder.png            || ICON=rainthunder-night.png           ;;
+        1273|1289)                                      [[ $IS_DAY -eq 1 ]] && ICON=rainthunder.png            || ICON=rainthunder-night.png           ;;
         1168|1171|1198|1201|1207|1237|1252|1261|1264)   [[ $IS_DAY -eq 1 ]] && ICON=sleet.png                  || ICON=sleet-night.png                 ;;
         1069|1072|1204|1249|1276|1279)                  [[ $IS_DAY -eq 1 ]] && ICON=sleetsun.png               || ICON=sleetsun-night.png              ;;
         1114|1117|1213|1219|1225|1258)                  [[ $IS_DAY -eq 1 ]] && ICON=snow.png                   || ICON=snow-night.png                  ;;
