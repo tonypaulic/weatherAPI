@@ -33,10 +33,17 @@ OD="https://weatherapi-com.p.rapidapi.com/forecast.json?q=$LATITUDE%2C$LONGITUDE
 
 # get current month for conditionals
 MONTH=$(date +%m)
-case $MONTH in
-    01|02|03|04|11|12) COLD=1 ;;
-    *) COLD=0 ;;
-esac
+if [ $LATITUDE = ^-.* ]; then
+    case $MONTH in
+        05|06|07|08|09|10) COLD=1 ;;
+        *) COLD=0 ;;
+    esac
+else
+    case $MONTH in
+        01|02|03|04|11|12) COLD=1 ;;
+        *) COLD=0 ;;
+    esac
+fi
 
 ##### call the weather API
 CACHE=$(wget --quiet --method GET --header "$H1" --header "$H2" --output-document - "$OD")
