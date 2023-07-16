@@ -234,10 +234,14 @@ fi
 echo -e "<tool><big>$gNAME</big>
 $gTEMP$gTEMP_SUFFIX <small>and</small> $CONDITION_TEXT
 
-Feels Like:\t\t$gFEELSLIKE$gTEMP_SUFFIX
-Heat Index:\t$HEATINDEX_C$gTEMP_SUFFIX
-Wind Chill:\t\t$WINDCHILL_C$gTEMP_SUFFIX
+Feels Like:\t\t$gFEELSLIKE$gTEMP_SUFFIX"
+if [ $COLD -eq 0 ]; then 
+    echo -e "Heat Index:\t$HEATINDEX_C$gTEMP_SUFFIX"
+else
+    echo -e "Wind Chill:\t\t$WINDCHILL_C$gTEMP_SUFFIX"
+fi
 
+echo -e "
 Humidity:\t\t$HUMIDITY%
 Pressure:\t\t$gPRESSURE $gPRESSURE_SUFFIX
 UV:\t\t\t$UV ($UVSTR)
@@ -246,9 +250,12 @@ Clouds:\t\t$CLOUD%
 Wind:\t\t$gWIND $gWIND_SUFFIX <small>from the</small> $WIND_DIR
 Gusting:\t\t$gGUST $gWIND_SUFFIX
  
-Precipitation:\t${gFTOTALPRECIP[0]} $gPRECIP_SUFFIX <small>expected</small> (${FDAILY_CHANCE_OF_RAIN[0]}% <small>probability</small>)
-Snow:\t\t${FTOTALSNOW_CM[0]} cm
+Precipitation:\t${gFTOTALPRECIP[0]} $gPRECIP_SUFFIX <small>expected</small> (${FDAILY_CHANCE_OF_RAIN[0]}% <small>probability</small>)"
+if [ $COLD -eq 1 ]; then
+echo -e "Snow:\t\t${FTOTALSNOW_CM[0]} cm"
+fi
 
+echo -e "
 Sunrise/set:\t${gFASTRO_SUNRISE[0]} / ${gFASTRO_SUNSET[0]}
 Moonphase:\t\U$SYMBOL ${FASTRO_MOONPHASE[0]} (${FASTRO_MOON_ILLUMINATION[0]}% <small>illuminated</small>)
 
