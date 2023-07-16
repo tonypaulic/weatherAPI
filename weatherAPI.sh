@@ -31,6 +31,13 @@ H1="X-RapidAPI-Key: $API_KEY"
 H2="X-RapidAPI-Host: weatherapi-com.p.rapidapi.com"
 OD="https://weatherapi-com.p.rapidapi.com/forecast.json?q=$LATITUDE%2C$LONGITUDE&days=3"
 
+# get current month for conditionals
+MONTH=$(date +%m)
+case $MONTH in
+    01|02|03|04|11|12) COLD=1 ;;
+    *) COLD=0 ;;
+esac
+
 ##### call the weather API
 CACHE=$(wget --quiet --method GET --header "$H1" --header "$H2" --output-document - "$OD")
 
@@ -68,6 +75,11 @@ FEELSLIKE_F=$(printf "%.0f\n" "$(echo $CACHE | jq ".current.feelslike_f" | tr -d
 UV=$(echo $CACHE | jq ".current.uv" | tr -d \")
 GUST_MPH=$(echo $CACHE | jq ".current.gust_mph" | tr -d \")
 GUST_KPH=$(echo $CACHE | jq ".current.gust_kph" | tr -d \")
+
+WINDCHILL_C=$(printf "%.0f\n" "$(echo $CACHE | jq ".forecast.forecastday[0].hour[$(date +%k)].windchill_c" | tr -d \")")
+WINDCHILL_F=$(printf "%.0f\n" "$(echo $CACHE | jq ".forecast.forecastday[0].hour[$(date +%k)].windchill_f" | tr -d \")")
+HEATINDEX_C=$(printf "%.0f\n" "$(echo $CACHE | jq ".forecast.forecastday[0].hour[$(date +%k)].heatindex_c" | tr -d \")")
+HEATINDEX_F=$(printf "%.0f\n" "$(echo $CACHE | jq ".forecast.forecastday[0].hour[$(date +%k)].heatindex_f" | tr -d \")")
 
 for (( c=0; c<3; c++ ))
 do
@@ -118,6 +130,8 @@ done
 [[ $UNIT == "imperial" ]] && gFEELSLIKE=$FEELSLIKE_F    || gFEELSLIKE=$FEELSLIKE_C
     #[[ $UNIT == "imperial" ]] && gVIS=$VIS_MILES            || gVIS=$VIS_KM
 [[ $UNIT == "imperial" ]] && gGUST=$GUST_MPH            || gGUST=$GUST_KPH
+[[ $UNIT == "imperial" ]] && gWINDCHILL=$WINDCHILL_F    || gWINDCHILL=$WINDCHILL_C
+[[ $UNIT == "imperial" ]] && gHEATINDEX=$HEATINDEX_F    || gHEATINDEX=$HEATINDEX_C
 
 for (( c=0; c<3; c++ ))
 do
@@ -221,6 +235,8 @@ echo -e "<tool><big>$gNAME</big>
 $gTEMP$gTEMP_SUFFIX <small>and</small> $CONDITION_TEXT
 
 Feels Like:\t\t$gFEELSLIKE$gTEMP_SUFFIX
+Heat Index:\t$HEATINDEX_C$gTEMP_SUFFIX
+Wind Chill:\t\t$WINDCHILL_C$gTEMP_SUFFIX
 
 Humidity:\t\t$HUMIDITY%
 Pressure:\t\t$gPRESSURE $gPRESSURE_SUFFIX
