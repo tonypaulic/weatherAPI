@@ -8,8 +8,10 @@
 # $4 = API Key (https://www.weatherapi.com/signup.aspx)
 
 ##### test to see if the correct number of paramaters was passed
-if [ "$#" -ne 4 ]; then 
+if [ "$1" != "auto" ] && [ "$#" -ne 4 ]; then 
 	echo "Usage: $0 SITENAME LATITUDE LONGITUDE APIKEY"
+	echo "or"
+	echo "Usage: $0 auto APIKEY (to set weather based on geo-location of public IP address)"
 	exit 1
 fi
 
@@ -21,10 +23,18 @@ IMAGE_SIZE=22           # 22, 48, or 128
 WEATHER_LINK="https://www.weatherapi.com/weather/q/oshawa-ontario-canada-316180?loc=316180"
 
 ##### script globals 
-SITENAME="$1"
-LATITUDE="$2"
-LONGITUDE="$3"
-API_KEY="$4"
+if [ "$1" != "auto" ]; then
+	SITENAME="$1"
+	LATITUDE="$2"
+	LONGITUDE="$3"
+	API_KEY="$4"
+else
+	API_KEY="$2"
+	LATITUDE="$(curl -s ipinfo.io/$(curl ifconfig.co) | grep loc | awk '{print $2}' | tr -d \" | awk -F',' '{print $1}')"
+	LONGITUDE="$(curl -s ipinfo.io/$(curl ifconfig.co) | grep loc | awk '{print $2}' | tr -d \" | awk -F',' '{print $2}')"
+	USE_SITEID=0
+	WEATHER_LINK="https://www.weatherapi.com/weather/"
+fi
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 IMAGES_DIR="$SCRIPT_DIR/images/$IMAGE_SIZE"
 H1="X-RapidAPI-Key: $API_KEY"
