@@ -60,6 +60,7 @@ CACHE=$(wget --quiet --method GET --header "$H1" --header "$H2" --output-documen
 
 ##### parse the results
 NAME=$(echo $CACHE | jq ".location.name" | tr -d \")
+if [ "$2" == "auto" ]; then WEATHER_LINK="https://www.weatherapi.com/weather/q/$NAME"; fi
     #REGION=$(echo $CACHE | jq ".location.region" | tr -d \")
     #COUNTRY=$(echo $CACHE | jq ".location.country" | tr -d \")
     #LAT=$(echo $CACHE | jq ".location.lat" | tr -d \")
