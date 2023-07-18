@@ -2,34 +2,34 @@
 # requires: xfce4-genmon-plugin wget jq imagemagick 
 # call: /path/to/script SITENAME LATITUDE LONGITUDE APIKEY
 #
-# $1 = SITENAME
-# $2 = LATITUDE
-# $3 = LONGITUDE
-# $4 = API Key (https://www.weatherapi.com/signup.aspx)
+# $1 = API Key (https://www.weatherapi.com/signup.aspx)
+# $2 = SITENAME (or 'auto')
+# $3 = LATITUDE (if auto not used)
+# $4 = LONGITUDE (if auto not used)
+
 
 ##### test to see if the correct number of paramaters was passed
-if [ "$1" != "auto" ] && [ "$#" -ne 4 ]; then 
-	echo "Usage: $0 SITENAME LATITUDE LONGITUDE APIKEY"
+if [ "$2" != "auto" ] && [ "$#" -ne 4 ]; then 
+	echo "Usage: $0 APIKEY SITENAME LATITUDE LONGITUDE"
 	echo "or"
-	echo "Usage: $0 auto APIKEY (to set weather based on geo-location of public IP address)"
+	echo "Usage: $0 APIKEY auto (to set weather based on geo-location of public IP address)"
 	exit 1
 fi
 
 ##### configurable items
-USE_SITEID=1            # whether to use the SITEID provided, or the location names as returned by the API
+USE_SITEID=1            # if not auto, whether to use the SITEID provided, or the location names as returned by the API
 UNIT=metric             # metric or imperial
 USE_THEME_ICONS=0       # 0 = no (use images), 1 = yes, use icon theme's weather icons
 IMAGE_SIZE=22           # 22, 48, or 128
 WEATHER_LINK="https://www.weatherapi.com/weather/q/oshawa-ontario-canada-316180?loc=316180"
 
 ##### script globals 
-if [ "$1" != "auto" ]; then
-	SITENAME="$1"
-	LATITUDE="$2"
-	LONGITUDE="$3"
-	API_KEY="$4"
+API_KEY="$1"
+if [ "$2" != "auto" ]; then
+	SITENAME="$2"
+	LATITUDE="$3"
+	LONGITUDE="$4"
 else
-	API_KEY="$2"
 	LATITUDE="$(curl -s ipinfo.io/$(curl ifconfig.co) | grep loc | awk '{print $2}' | tr -d \" | awk -F',' '{print $1}')"
 	LONGITUDE="$(curl -s ipinfo.io/$(curl ifconfig.co) | grep loc | awk '{print $2}' | tr -d \" | awk -F',' '{print $2}')"
 	USE_SITEID=0
