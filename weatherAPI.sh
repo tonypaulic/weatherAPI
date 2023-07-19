@@ -1,6 +1,8 @@
 #!/bin/bash
 # requires: xfce4-genmon-plugin wget jq imagemagick 
-# call: /path/to/script SITENAME LATITUDE LONGITUDE APIKEY
+# call: /path/to/script APIKEY SITENAME LATITUDE LONGITUDE 
+#   or:
+# call: /path/to/script APIKEY auto
 #
 # $1 = API Key (https://www.weatherapi.com/signup.aspx)
 # $2 = SITENAME (or 'auto')
