@@ -20,10 +20,14 @@ Note: depending on the font your are using, you may need to adjust the number of
        - IMAGE_SIZE = 22, 48, or 128
   4. Add the genmon plugin to the panel
   5. Set in it's properties:
-     - command = /path/to/weatherAPI.sh SITENAME LATITUDE LONGITUDE APIKEY
-      - SITE is the name of your town/city
-      - LATITUDE/LONGITUDE - hopefully self explanatory
-      - APIKEY - you will need to register and obtain an APIKEY from https://rapidapi.com/weatherapi/api/weatherapi-com/
+     - if specifying exact latitude/longitude coordinates:
+        - command = /path/to/weatherAPI.sh APIKEY SITENAME LATITUDE LONGITUDE
+         - APIKEY - you will need to register and obtain an APIKEY from https://rapidapi.com/weatherapi/api/weatherapi-com/
+         - SITE is the name of your town/city
+         - LATITUDE/LONGITUDE - hopefully self explanatory
+     - if running in "auto" mode - location based on geo-location of ip address:
+        - command = /path/to/weatherAPI.sh APIKEY auto
+         - APIKEY - you will need to register and obtain an APIKEY from https://rapidapi.com/weatherapi/api/weatherapi-com/
   6. Uncheck label
   7. Period = 900 (or whatever refresh value you want - weatherAPI allows 1 million refreshes per month with free subscription_
   8. click on Save
