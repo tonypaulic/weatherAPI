@@ -257,12 +257,12 @@ $gTEMP$gTEMP_SUFFIX <small>and</small> $CONDITION_TEXT
 Feels Like:\t\t$gFEELSLIKE$gTEMP_SUFFIX"
 
 if [ $COLD -eq 0 ]; then 
-    if [ $HEATINDEX_C -gt $gFEELSLIKE ]; then
-        echo -e "Heat Index:\t$HEATINDEX_C$gTEMP_SUFFIX"
+    if [ $gHEATINDEX -gt $gFEELSLIKE ]; then
+        echo -e "Heat Index:\t$gHEATINDEX$gTEMP_SUFFIX"
     fi
 else
-    if [ $WIND_CHILL_C -lt $gFEELSLIKE ]; then
-        echo -e "Wind Chill:\t\t$WINDCHILL_C$gTEMP_SUFFIX"
+    if [ $gWIND_CHILL -lt $gFEELSLIKE ]; then
+        echo -e "Wind Chill:\t\t$gWINDCHILL$gTEMP_SUFFIX"
     fi
 fi
 
