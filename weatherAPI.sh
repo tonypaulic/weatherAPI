@@ -9,6 +9,14 @@
 # $3 = LATITUDE (if auto not used)
 # $4 = LONGITUDE (if auto not used)
 
+#######################################################################################################################
+##### configurable items
+USE_SITEID=1            # if not auto, whether to use the SITEID provided, or the location names as returned by the API
+UNIT=metric             # metric or imperial
+USE_THEME_ICONS=0       # 0 = no (use images), 1 = yes, use icon theme's weather icons
+IMAGE_SIZE=22           # 22, 48, or 128
+WEATHER_LINK="https://www.weatherapi.com/weather/q/oshawa-ontario-canada-316180?loc=316180"
+#######################################################################################################################
 
 ##### test to see if the correct number of paramaters was passed
 if [ "$2" != "auto" ] && [ "$#" -ne 4 ]; then 
@@ -17,13 +25,6 @@ if [ "$2" != "auto" ] && [ "$#" -ne 4 ]; then
 	echo "Usage: $0 APIKEY auto (to set weather based on geo-location of public IP address)"
 	exit 1
 fi
-
-##### configurable items
-USE_SITEID=1            # if not auto, whether to use the SITEID provided, or the location names as returned by the API
-UNIT=metric             # metric or imperial
-USE_THEME_ICONS=0       # 0 = no (use images), 1 = yes, use icon theme's weather icons
-IMAGE_SIZE=22           # 22, 48, or 128
-WEATHER_LINK="https://www.weatherapi.com/weather/q/oshawa-ontario-canada-316180?loc=316180"
 
 ##### script globals 
 API_KEY="$1"
