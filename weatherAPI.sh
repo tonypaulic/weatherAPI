@@ -176,12 +176,12 @@ done
 
 ##### parse uvindex value into text
 case $UV in
-    [0-2])      UVSTR="Low"       ;;
-    [3-5])      UVSTR="Moderate"  ;;
-    [6-7])      UVSTR="High"      ;;
-    [8-9]|10)   UVSTR="Very high" ;;
-    11|12)      UVSTR="Extreme"   ;;
-    *)          UVSTR="Unknown"   ;;
+    [0-2].*)      	UVSTR="Low"       ;;
+    [3-5].*)      	UVSTR="Moderate"  ;;
+    [6-7].*)      	UVSTR="High"      ;;
+    [8-9].*|10.*)	UVSTR="Very high" ;;
+    11.*|12.*) 		UVSTR="Extreme"   ;;
+    *)   		UVSTR="Unknown"   ;;
 esac
 
 ##### prepare the icon to use
