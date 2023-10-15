@@ -53,7 +53,7 @@ if [ $LATITUDE = ^-.* ]; then
     esac
 else
     case $MONTH in
-        01|02|03|04|11|12) COLD=1 ;;
+        01|02|03|04|10|11|12) COLD=1 ;;
         *) COLD=0 ;;
     esac
 fi
