@@ -255,7 +255,7 @@ fi
 echo -e "<tool><big>$gNAME</big>
 $gTEMP$gTEMP_SUFFIX <small>and</small> $CONDITION_TEXT
 
-Feels Like:\t\t$gFEELSLIKE$gTEMP_SUFFIX"
+Feels Like:\t$gFEELSLIKE$gTEMP_SUFFIX"
 
 if [ $COLD -eq 0 ]; then 
     if [ $gHEATINDEX -gt $gTEMP -a $gHEATINDEX -gt $gFEELSLIKE ]; then
@@ -287,7 +287,7 @@ Sunrise/set:\t${gFASTRO_SUNRISE[0]} / ${gFASTRO_SUNSET[0]}
 Moonphase:\t\U$SYMBOL ${FASTRO_MOONPHASE[0]} (${FASTRO_MOON_ILLUMINATION[0]}% <small>illuminated</small>)
 
 Today:\t\t${FCONDITION_TEXT[0]}, high: ${gFMAXTEMP[0]} low: ${gFMINTEMP[0]}
-Tomorrow:\t\t${FCONDITION_TEXT[1]}, high: ${gFMAXTEMP[1]}, low: ${gFMINTEMP[1]}
+Tomorrow:\t${FCONDITION_TEXT[1]}, high: ${gFMAXTEMP[1]}, low: ${gFMINTEMP[1]}
 Next Day:\t\t${FCONDITION_TEXT[2]}, high: ${gFMAXTEMP[2]}, low: ${gFMINTEMP[2]}
 
 <small><i>Last updated: $LAST_UPDATED</i></small></tool>"
