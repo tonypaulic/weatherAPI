@@ -74,7 +74,9 @@ if [ "$2" == "auto" ]; then WEATHER_LINK="https://www.weatherapi.com/weather/q/$
     #LAST_UPDATED_EPOCH=$(echo $CACHE | jq ".current.last_updated_epoch" | tr -d \")
 LAST_UPDATED=$(echo $CACHE | jq ".current.last_updated" | tr -d \")
 TEMP_C=$(printf "%.0f\n" "$(echo $CACHE | jq ".current.temp_c" | tr -d \")")
+[[ $TEMP_C == "-0" ]] && TEMP_C="0"
 TEMP_F=$(printf "%.0f\n" "$(echo $CACHE | jq ".current.temp_f" | tr -d \")")
+[[ $TEMP_F == "-0" ]] && TEMP_F="0"
 IS_DAY=$(echo $CACHE | jq ".current.is_day" | tr -d \")
 CONDITION_TEXT=$(echo $CACHE | jq ".current.condition.text" | tr -d \")
 CONDITION_ICON=$(echo $CACHE | jq ".current.condition.icon" | tr -d \")
@@ -90,7 +92,9 @@ PRESSURE_IN=$(echo $CACHE | jq ".current.pressure_in" | tr -d \")
 HUMIDITY=$(echo $CACHE | jq ".current.humidity" | tr -d \")
 CLOUD=$(echo $CACHE | jq ".current.cloud" | tr -d \")
 FEELSLIKE_C=$(printf "%.0f\n" "$(echo $CACHE | jq ".current.feelslike_c" | tr -d \")")
+[[ $FEELSLIKE_C == "-0" ]] && FEELSLIKE_C="0"
 FEELSLIKE_F=$(printf "%.0f\n" "$(echo $CACHE | jq ".current.feelslike_f" | tr -d \")")
+[[ $FEELSLIKE_F == "-0" ]] && FEELSLIKE_F="0"
     #VIS_KM=$(echo $CACHE | jq ".current.vis_km" | tr -d \")
     #VIS_MILES=$(echo $CACHE | jq ".current.vis_miles" | tr -d \")
 UV=$(echo $CACHE | jq ".current.uv" | tr -d \")
