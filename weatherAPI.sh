@@ -256,7 +256,7 @@ else
     echo "<css>.genmon_imagebutton>image {padding-bottom: 3px}</css>"
 fi
 
-echo -e "<tool><big>$gNAME</big>
+echo -e "<tool><big><b>$gNAME</b></big>
 $gTEMP$gTEMP_SUFFIX <small>and</small> $CONDITION_TEXT
 
 Feels Like:\t$gFEELSLIKE$gTEMP_SUFFIX"
