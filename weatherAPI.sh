@@ -259,7 +259,7 @@ fi
 echo -e "<tool><big><b>$gNAME</b></big>
 $gTEMP$gTEMP_SUFFIX <small>and</small> $CONDITION_TEXT
 
-Feels Like:\t$gFEELSLIKE$gTEMP_SUFFIX"
+Feels Like:\t\t$gFEELSLIKE$gTEMP_SUFFIX"
 
 if [ $COLD -eq 0 ]; then 
     if [ $gHEATINDEX -gt $gTEMP -a $gHEATINDEX -gt $gFEELSLIKE ]; then
@@ -274,24 +274,24 @@ fi
 echo -e "
 Humidity:\t\t$HUMIDITY%
 Pressure:\t\t$gPRESSURE $gPRESSURE_SUFFIX
-UV:\t\t\t$UV ($UVSTR)
+UV:\t\t\t\t$UV ($UVSTR)
 
-Clouds:\t\t$CLOUD%
-Wind:\t\t$gWIND $gWIND_SUFFIX <small>from the</small> $WIND_DIR
+Clouds:\t\t\t$CLOUD%
+Wind:\t\t\t$gWIND $gWIND_SUFFIX <small>from the</small> $WIND_DIR
 Gusting:\t\t$gGUST $gWIND_SUFFIX
  
 Precipitation:\t${gFTOTALPRECIP[0]} $gPRECIP_SUFFIX <small>expected</small> (${FDAILY_CHANCE_OF_RAIN[0]}% <small>probability</small>)"
 
 if [ $COLD -eq 1 ]; then
-echo -e "Snow:\t\t${FTOTALSNOW_CM[0]} cm"
+echo -e "Snow:\t\t\t${FTOTALSNOW_CM[0]} cm"
 fi
 
 echo -e "
-Sunrise/set:\t${gFASTRO_SUNRISE[0]} / ${gFASTRO_SUNSET[0]}
-Moonphase:\t\U$SYMBOL ${FASTRO_MOONPHASE[0]} (${FASTRO_MOON_ILLUMINATION[0]}% <small>illuminated</small>)
+Sunrise/set:\t\t${gFASTRO_SUNRISE[0]} / ${gFASTRO_SUNSET[0]}
+Moonphase:\t\t\U$SYMBOL ${FASTRO_MOONPHASE[0]} (${FASTRO_MOON_ILLUMINATION[0]}% <small>illuminated</small>)
 
-Today:\t\t${FCONDITION_TEXT[0]}, high: ${gFMAXTEMP[0]} low: ${gFMINTEMP[0]}
-Tomorrow:\t${FCONDITION_TEXT[1]}, high: ${gFMAXTEMP[1]}, low: ${gFMINTEMP[1]}
+Today:\t\t\t${FCONDITION_TEXT[0]}, high: ${gFMAXTEMP[0]} low: ${gFMINTEMP[0]}
+Tomorrow:\t\t${FCONDITION_TEXT[1]}, high: ${gFMAXTEMP[1]}, low: ${gFMINTEMP[1]}
 Next Day:\t\t${FCONDITION_TEXT[2]}, high: ${gFMAXTEMP[2]}, low: ${gFMINTEMP[2]}
 
 <small><i>Last updated: $LAST_UPDATED</i></small></tool>"
