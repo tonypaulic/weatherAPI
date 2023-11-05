@@ -1,69 +1,60 @@
 #!/bin/bash
-# requires: xfce4-genmon-plugin wget jq imagemagick 
-# call: /path/to/script APIKEY SITENAME LATITUDE LONGITUDE 
-#   or:
-# call: /path/to/script APIKEY auto
-#
-# $1 = API Key (https://www.weatherapi.com/signup.aspx)
-# $2 = SITENAME (or 'auto')
-# $3 = LATITUDE (if auto not used)
-# $4 = LONGITUDE (if auto not used)
+# This script queries the weatherAPI data service for current and forecast weather data
+#   and outputs a self-overwriting notification bubble with weather conditions 
+# Requires: curl jq [moon phase glyphs font support like nerd-fonts-symbols] [weatherapi.com free account]
 
 #######################################################################################################################
-##### configurable items
-USE_SITEID=1            # if not auto, whether to use the SITEID provided, or the location names as returned by the API
-UNIT=metric             # metric or imperial
-USE_THEME_ICONS=0       # 0 = no (use images), 1 = yes, use icon theme's weather icons
-IMAGE_SIZE=22           # 22, 48, or 128
+##### CONFIGURABLE SETTINGS - ADJUST AS NEEDED
+#
+# USE_SITEID: whether to use the SITE provided (1), or the location names as returned by the API (0)
+USE_SITEID=0
+#    
+# if USE_SITEID=1, specify the SITE      
+SITE=Whitby
+#
+# metric or imperial
+UNIT=metric
+#
+# your personal weatherapi key - signup here: https://www.weatherapi.com/      
+KEY="$(cat $HOME/.weatherAPI_key)"
+#
+# see request parameter 'q' at https://www.weatherapi.com/docs/
+#QLOOKUP="43.6532,-78.3832"
+#QLOOKUP="Toronto"
+QLOOKUP="L1P"
+#QLOOKUP="metar:CYKZ"
+#QLOOKUP="iata:YKZ"
+#QLOOKUP="auto:ip"
+#QLOOKUP="192.168.1.1"
+#QLOOKUP="id:xxx"       # not implemented
+#
+# set webpage for genmon button click
 WEATHER_LINK="https://www.weatherapi.com/weather/q/oshawa-ontario-canada-316180?loc=316180"
 #######################################################################################################################
 
-##### test to see if the correct number of paramaters was passed
-if [ "$2" != "auto" ] && [ "$#" -ne 4 ]; then 
-	echo "Usage: $0 APIKEY SITENAME LATITUDE LONGITUDE"
-	echo "or"
-	echo "Usage: $0 APIKEY auto (to set weather based on geo-location of public IP address)"
-	exit 1
-fi
-
-##### script globals 
-API_KEY="$1"
-if [ "$2" != "auto" ]; then
-	SITENAME="$2"
-	LATITUDE="$3"
-	LONGITUDE="$4"
-else
-	LATITUDE="$(curl -s ipinfo.io/$(curl ifconfig.co) | grep loc | awk '{print $2}' | tr -d \" | awk -F',' '{print $1}')"
-	LONGITUDE="$(curl -s ipinfo.io/$(curl ifconfig.co) | grep loc | awk '{print $2}' | tr -d \" | awk -F',' '{print $2}')"
-	USE_SITEID=0
-	WEATHER_LINK="https://www.weatherapi.com/weather/"
-fi
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-IMAGES_DIR="$SCRIPT_DIR/images/$IMAGE_SIZE"
-H1="X-RapidAPI-Key: $API_KEY"
-H2="X-RapidAPI-Host: weatherapi-com.p.rapidapi.com"
-OD="https://weatherapi-com.p.rapidapi.com/forecast.json?q=$LATITUDE%2C$LONGITUDE&days=3"
-
-# get current month for conditionals
+# get current month for conditionals. If cold will see windchill, otherwise heat index (if applicable)
 MONTH=$(date +%m)
-if [ $LATITUDE = ^-.* ]; then
+if [ "$LATITUDE" == "^-.*" ]; then
+    # southern hemisphere
     case $MONTH in
         05|06|07|08|09|10) COLD=1 ;;
         *) COLD=0 ;;
     esac
 else
+    # northern hemisphere
     case $MONTH in
         01|02|03|04|10|11|12) COLD=1 ;;
         *) COLD=0 ;;
     esac
 fi
 
-##### call the weather API
-CACHE=$(wget --quiet --method GET --header "$H1" --header "$H2" --output-document - "$OD")
+##### call the weather API, save output to variable and file
+CACHE=$(curl -s -X 'GET' \
+  'https://api.weatherapi.com/v1/forecast.json?q='$QLOOKUP'&days=3&alerts=alerts%3Dyes&aqi=aqi%3Dyes&key='$KEY \
+  -H 'accept: application/json' | tee /tmp/weather.cache)
 
-##### parse the results
-NAME=$(echo $CACHE | jq ".location.name" | tr -d \")
-if [ "$2" == "auto" ]; then WEATHER_LINK="https://www.weatherapi.com/weather/q/$NAME"; fi
+##### parse the results (indented & commented out variables exist but not used)
+[[ $USE_SITEID -eq 0 ]] && NAME=$(echo $CACHE | jq ".location.name" | tr -d \") || NAME=$SITE
     #REGION=$(echo $CACHE | jq ".location.region" | tr -d \")
     #COUNTRY=$(echo $CACHE | jq ".location.country" | tr -d \")
     #LAT=$(echo $CACHE | jq ".location.lat" | tr -d \")
@@ -74,9 +65,7 @@ if [ "$2" == "auto" ]; then WEATHER_LINK="https://www.weatherapi.com/weather/q/$
     #LAST_UPDATED_EPOCH=$(echo $CACHE | jq ".current.last_updated_epoch" | tr -d \")
 LAST_UPDATED=$(echo $CACHE | jq ".current.last_updated" | tr -d \")
 TEMP_C=$(printf "%.0f\n" "$(echo $CACHE | jq ".current.temp_c" | tr -d \")")
-[[ $TEMP_C == "-0" ]] && TEMP_C="0"
 TEMP_F=$(printf "%.0f\n" "$(echo $CACHE | jq ".current.temp_f" | tr -d \")")
-[[ $TEMP_F == "-0" ]] && TEMP_F="0"
 IS_DAY=$(echo $CACHE | jq ".current.is_day" | tr -d \")
 CONDITION_TEXT=$(echo $CACHE | jq ".current.condition.text" | tr -d \")
 CONDITION_ICON=$(echo $CACHE | jq ".current.condition.icon" | tr -d \")
@@ -92,20 +81,18 @@ PRESSURE_IN=$(echo $CACHE | jq ".current.pressure_in" | tr -d \")
 HUMIDITY=$(echo $CACHE | jq ".current.humidity" | tr -d \")
 CLOUD=$(echo $CACHE | jq ".current.cloud" | tr -d \")
 FEELSLIKE_C=$(printf "%.0f\n" "$(echo $CACHE | jq ".current.feelslike_c" | tr -d \")")
-[[ $FEELSLIKE_C == "-0" ]] && FEELSLIKE_C="0"
 FEELSLIKE_F=$(printf "%.0f\n" "$(echo $CACHE | jq ".current.feelslike_f" | tr -d \")")
-[[ $FEELSLIKE_F == "-0" ]] && FEELSLIKE_F="0"
     #VIS_KM=$(echo $CACHE | jq ".current.vis_km" | tr -d \")
     #VIS_MILES=$(echo $CACHE | jq ".current.vis_miles" | tr -d \")
 UV=$(echo $CACHE | jq ".current.uv" | tr -d \")
 GUST_MPH=$(echo $CACHE | jq ".current.gust_mph" | tr -d \")
 GUST_KPH=$(echo $CACHE | jq ".current.gust_kph" | tr -d \")
-
 WINDCHILL_C=$(printf "%.0f\n" "$(echo $CACHE | jq ".forecast.forecastday[0].hour[$(date +%k)].windchill_c" | tr -d \")")
 WINDCHILL_F=$(printf "%.0f\n" "$(echo $CACHE | jq ".forecast.forecastday[0].hour[$(date +%k)].windchill_f" | tr -d \")")
 HEATINDEX_C=$(printf "%.0f\n" "$(echo $CACHE | jq ".forecast.forecastday[0].hour[$(date +%k)].heatindex_c" | tr -d \")")
 HEATINDEX_F=$(printf "%.0f\n" "$(echo $CACHE | jq ".forecast.forecastday[0].hour[$(date +%k)].heatindex_f" | tr -d \")")
 
+# forecast data
 for (( c=0; c<3; c++ ))
 do
 	    #FDATE[$c]=$(echo $CACHE | jq ".forecast.forecastday[$c].date" | tr -d \")
@@ -157,7 +144,6 @@ done
 [[ $UNIT == "imperial" ]] && gGUST=$GUST_MPH            || gGUST=$GUST_KPH
 [[ $UNIT == "imperial" ]] && gWINDCHILL=$WINDCHILL_F    || gWINDCHILL=$WINDCHILL_C
 [[ $UNIT == "imperial" ]] && gHEATINDEX=$HEATINDEX_F    || gHEATINDEX=$HEATINDEX_C
-
 for (( c=0; c<3; c++ ))
 do
     [[ $UNIT == "imperial" ]] && gFMAXTEMP[c$]=${FMAXTEMP_F[$c]} \
@@ -185,51 +171,29 @@ case $UV in
     [6-7].*)      	UVSTR="High"      ;;
     [8-9].*|10.*)	UVSTR="Very high" ;;
     11.*|12.*) 		UVSTR="Extreme"   ;;
-    *)   		UVSTR="Unknown"   ;;
+    *)   		    UVSTR="Unknown"   ;;
 esac
 
 ##### prepare the icon to use
-if [ $USE_THEME_ICONS -eq 1 ]; then
-    case $CONDITION_CODE in
-        1006|1009)                                      ICON=weather-overcast-symbolic  ;;    
-        1030|1135|1147)                                 ICON=weather-fog-symbolic ;;
-        1153|1183)                                      ICON=weather-showers-scattered-symbolic ;;
-        1063|1150|1180|1240)                            ICON=weather-showers-scattered-symbolic ;;
-        1087)                                           ICON=weather-storm-symbolic ;;
-        1003) [[ $IS_DAY -eq 1 ]] && ICON=weather-few-clouds-symbolic || ICON=weather-few-clouds-night-symbolic ;;
-        1186|1189|1192|1195|1243|1246)                  ICON=weather-showers-symbolic ;;
-        1273|1289)                                      ICON=weather-storm-symbolic   ;;
-        1168|1171|1198|1201|1207|1237|1252|1261|1264)   ICON=weather-showers-symbolic ;;
-        1069|1072|1204|1249|1276|1279)                  ICON=weather-showers-scattered-symbolic ;;
-        1114|1117|1213|1219|1225|1258)                  ICON=weather-snow-symbolic ;;
-        1066|1210|1216|1222|1255)                       ICON=weather-snow-symbolic ;;
-        1282)                                           ICON=weather-storm-symbolic ;;
-        1000) [[ $IS_DAY -eq 1 ]] && ICON=weather-clear-symbolic || ICON=weather-clear-night-symbolic ;;
-        *) ICON=wheather-severe-alert-symbolic
-    esac
-    gICON=$ICON
-else
-    case $CONDITION_CODE in
-        1006|1009)                                      [[ $IS_DAY -eq 1 ]] && ICON=cloud.png                  || ICON=cloud-night.png                 ;;    
-        1030|1135|1147)                                 [[ $IS_DAY -eq 1 ]] && ICON=fog.png                    || ICON=fog-night.png                   ;;
-        1153|1183)                                      [[ $IS_DAY -eq 1 ]] && ICON=lightrain.png              || ICON=lightrain-night.png             ;;
-        1063|1150|1180|1240)                            [[ $IS_DAY -eq 1 ]] && ICON=lightrainsun.png           || ICON=lightrainsun-night.png          ;;
-        1087)                                           [[ $IS_DAY -eq 1 ]] && ICON=lightrainthundersun.png    || ICON=lightrainthundersun-night.png   ;;
-        1003)                                           [[ $IS_DAY -eq 1 ]] && ICON=partlycloud.png            || ICON=partlycloud-night.png           ;;
-        1186|1189|1192|1195|1243|1246)                  [[ $IS_DAY -eq 1 ]] && ICON=rain.png                   || ICON=rain-night.png                  ;;
-        1273|1289)                                      [[ $IS_DAY -eq 1 ]] && ICON=rainthunder.png            || ICON=rainthunder-night.png           ;;
-        1168|1171|1198|1201|1207|1237|1252|1261|1264)   [[ $IS_DAY -eq 1 ]] && ICON=sleet.png                  || ICON=sleet-night.png                 ;;
-        1069|1072|1204|1249|1276|1279)                  [[ $IS_DAY -eq 1 ]] && ICON=sleetsun.png               || ICON=sleetsun-night.png              ;;
-        1114|1117|1213|1219|1225|1258)                  [[ $IS_DAY -eq 1 ]] && ICON=snow.png                   || ICON=snow-night.png                  ;;
-        1066|1210|1216|1222|1255)                       [[ $IS_DAY -eq 1 ]] && ICON=snowsun.png                || ICON=snowsun-night.png               ;;
-        1282)                                           [[ $IS_DAY -eq 1 ]] && ICON=snowthunder.png            || ICON=snowthunder-night.png           ;;
-        1000)                                           [[ $IS_DAY -eq 1 ]] && ICON=sun.png                    || ICON=sun-night.png                   ;;
-        *) ICON=nodata.png
-    esac
-    gIMAGE="$IMAGES_DIR/$ICON"
-fi
+case $CONDITION_CODE in
+    1006|1009)                                      ICON=weather-overcast-symbolic  ;;    
+    1030|1135|1147)                                 ICON=weather-fog-symbolic ;;
+    1153|1183)                                      ICON=weather-showers-scattered-symbolic ;;
+    1063|1150|1180|1240)                            ICON=weather-showers-scattered-symbolic ;;
+    1087)                                           ICON=weather-storm-symbolic ;;
+    1003) [[ $IS_DAY -eq 1 ]] && ICON=weather-few-clouds-symbolic || ICON=weather-few-clouds-night-symbolic ;;
+    1186|1189|1192|1195|1243|1246)                  ICON=weather-showers-symbolic ;;
+    1273|1289)                                      ICON=weather-storm-symbolic   ;;
+    1168|1171|1198|1201|1207|1237|1252|1261|1264)   ICON=weather-showers-symbolic ;;
+    1069|1072|1204|1249|1276|1279)                  ICON=weather-showers-scattered-symbolic ;;
+    1114|1117|1213|1219|1225|1258)                  ICON=weather-snow-symbolic ;;
+    1066|1210|1216|1222|1255)                       ICON=weather-snow-symbolic ;;
+    1282)                                           ICON=weather-storm-symbolic ;;
+    1000) [[ $IS_DAY -eq 1 ]] && ICON=weather-clear-symbolic || ICON=weather-clear-night-symbolic ;;
+    *) ICON=wheather-severe-alert-symbolic
+esac
 
-# process moon phase glyph (https://www.unicode.org/L2/L2017/17304-moon-var.pdf)
+# process moon phase glyph (also: https://www.unicode.org/L2/L2017/17304-moon-var.pdf)
 case ${FASTRO_MOONPHASE[0]} in
     "New Moon")         [[ $LATITUDE = ^-.* ]] && SYMBOL="0001F311" || SYMBOL="0001F315"    ;;
     "Waning Crescent")  [[ $LATITUDE = ^-.* ]] && SYMBOL="0001F312" || SYMBOL="0001F314"    ;;
@@ -242,58 +206,46 @@ case ${FASTRO_MOONPHASE[0]} in
     *)                  SYMBOL="X" ;;
 esac
 
-# choose which site name to use in tooltip
-[[ $USE_SITEID = 1 ]] && gNAME=$SITENAME || gNAME=$NAME
+# remove negative zero temperatures
+[[ "$gTEMP" == "-0" ]] && gTEMP="0"
+[[ "$gFEELSLIKE" == "-0" ]] && gFEELSLIKE="0"
 
-##### genmon
-if [ $USE_THEME_ICONS -eq 1 ]; then
-    echo "<icon>$gICON</icon><<txt> $gTEMP$gTEMP_SUFFIX</txt>"
-    echo "<iconclick>exo-open $WEATHER_LINK</iconclick><txtclick>exo-open $WEATHER_LINK</txtclick>"
-    echo "<css></css>"    
-else
-    echo "<img>$gIMAGE</img><txt> $gTEMP$gTEMP_SUFFIX</txt>"
-    echo "<click>exo-open $WEATHER_LINK</click><txtclick>exo-open $WEATHER_LINK</txtclick>"
-    echo "<css>.genmon_imagebutton>image {padding-bottom: 3px}</css>"
-fi
+# do the genmon
+echo "<icon>$ICON</icon><txt>$gTEMP$gTEMP_SUFFIX</txt>"
+echo "<iconclick>exo-open $WEATHER_LINK</iconclick><txtclick>exo-open $WEATHER_LINK</txtclick>"
+echo "<css>.genmon_imagebutton {padding-bottom: 6px} .genmon_valuebutton {padding-top: 2px} image {-gtk-icon-theme: 'elementary-xfce'}</css>" 
 
-echo -e "<tool><big><b>$gNAME</b></big>
-$gTEMP$gTEMP_SUFFIX <small>and</small> $CONDITION_TEXT
-
-Feels Like:\t\t$gFEELSLIKE$gTEMP_SUFFIX"
-
+# create the tooltip
+echo -e "<tool><big><b>$NAME</b></big>\r"
+echo -e "$gTEMP$gTEMP_SUFFIX   &amp;   $CONDITION_TEXT\r\rFeels Like:\t\t$gFEELSLIKE$gTEMP_SUFFIX\r\r"
 if [ $COLD -eq 0 ]; then 
-    if [ $gHEATINDEX -gt $gTEMP -a $gHEATINDEX -gt $gFEELSLIKE ]; then
-        echo -e "Heat Index:\t$gHEATINDEX$gTEMP_SUFFIX"
+    if [ ! -z $gHEATINDEX ]; then 
+        if [ $gHEATINDEX -gt $gTEMP ] && [ $gHEATINDEX -gt $gFEELSLIKE ]; then
+            echo -e "Heat Index:\t\t$gHEATINDEX$gTEMP_SUFFIX\r\r"
+        fi
     fi
 else
-    if [ $gWIND_CHILL -lt $gTEMP -a $gWIND_CHILL -lt $gFEELSLIKE ]; then
-        echo -e "Wind Chill:\t\t$gWINDCHILL$gTEMP_SUFFIX"
+    if [ ! -z $gWIND_CHILL ]; then
+        if [ $gWIND_CHILL -lt $gTEMP ] && [ $gWIND_CHILL -lt $gFEELSLIKE ]; then
+            echo -e "Wind Chill:\t\t$gWINDCHILL$gTEMP_SUFFIX\r\r"
+        fi
     fi
 fi
-
-echo -e "
-Humidity:\t\t$HUMIDITY%
-Pressure:\t\t$gPRESSURE $gPRESSURE_SUFFIX
-UV:\t\t\t\t$UV ($UVSTR)
-
-Clouds:\t\t\t$CLOUD%
-Wind:\t\t\t$gWIND $gWIND_SUFFIX <small>from the</small> $WIND_DIR
-Gusting:\t\t$gGUST $gWIND_SUFFIX
- 
-Precipitation:\t${gFTOTALPRECIP[0]} $gPRECIP_SUFFIX <small>expected</small> (${FDAILY_CHANCE_OF_RAIN[0]}% <small>probability</small>)"
-
+echo -e "Humidity:\t\t$HUMIDITY%\r"
+echo -e "Pressure:\t\t$gPRESSURE $gPRESSURE_SUFFIX\r"
+echo -e "UV:\t\t\t\t$UV <small>( $UVSTR )</small>\r\r"
+echo -e "Clouds:\t\t\t$CLOUD%\r"
+echo -e "Wind:\t\t\t$gWIND $gWIND_SUFFIX from the $WIND_DIR\r"
+echo -e "Gusting:\t\t$gGUST $gWIND_SUFFIX\r\r"
+echo -e "Precipitation:\t${gFTOTALPRECIP[0]} $gPRECIP_SUFFIX expected <small>( ${FDAILY_CHANCE_OF_RAIN[0]}% probability )</small>\r"
 if [ $COLD -eq 1 ]; then
-echo -e "Snow:\t\t\t${FTOTALSNOW_CM[0]} cm"
+    echo -e "Snow:\t\t\t${FTOTALSNOW_CM[0]} cm\r\r"
 fi
-
-echo -e "
-Sunrise/set:\t\t${gFASTRO_SUNRISE[0]} / ${gFASTRO_SUNSET[0]}
-Moonphase:\t\t\U$SYMBOL ${FASTRO_MOONPHASE[0]} (${FASTRO_MOON_ILLUMINATION[0]}% <small>illuminated</small>)
-
-Today:\t\t\t${FCONDITION_TEXT[0]}, high: ${gFMAXTEMP[0]} low: ${gFMINTEMP[0]}
-Tomorrow:\t\t${FCONDITION_TEXT[1]}, high: ${gFMAXTEMP[1]}, low: ${gFMINTEMP[1]}
-Next Day:\t\t${FCONDITION_TEXT[2]}, high: ${gFMAXTEMP[2]}, low: ${gFMINTEMP[2]}
-
-<small><i>Last updated: $LAST_UPDATED</i></small></tool>"
+echo -e "Sunrise/set:\t\t${gFASTRO_SUNRISE[0]} / ${gFASTRO_SUNSET[0]}\r"
+echo -e "Moonphase:\t\t$(echo -e \\U$SYMBOL) ${FASTRO_MOONPHASE[0]} <small>( ${FASTRO_MOON_ILLUMINATION[0]}% illuminated )</small>\r\r"
+echo -e "Today:\t\t\t${FCONDITION_TEXT[0]}, high: ${gFMAXTEMP[0]} low: ${gFMINTEMP[0]}\r"
+echo -e "Tomorrow:\t\t${FCONDITION_TEXT[1]}, high: ${gFMAXTEMP[1]}, low: ${gFMINTEMP[1]}\r"
+echo -e "Next Day:\t\t${FCONDITION_TEXT[2]}, high: ${gFMAXTEMP[2]}, low: ${gFMINTEMP[2]}\r\r"
+echo -e "<small><i>Last updated: $LAST_UPDATED</i></small></tool>"
 
 exit 0
