@@ -15,7 +15,8 @@ SITE=Whitby
 # metric or imperial
 UNIT=metric
 #
-# your personal weatherapi key - signup here: https://www.weatherapi.com/      
+# your personal weatherapi key - signup here: https://www.weatherapi.com/ 
+#   put your key into $HOME/.weatherAPI_key or just as variable below
 KEY="$(cat $HOME/.weatherAPI_key)"
 #
 # see request parameter 'q' at https://www.weatherapi.com/docs/
