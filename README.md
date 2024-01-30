@@ -18,11 +18,10 @@ Note: depending on the font your are using, you may need to adjust the number of
        - WEATHER_LINK = the URL of webpage to open when plugin is clicked
   3. Add the genmon plugin to the panel
   4. Set in it's properties:
-     - if specifying exact latitude/longitude coordinates:
-        - command = /path/to/weatherAPI.sh
-  5. Uncheck label
-  6. Period = 900 (or whatever refresh value you want - weatherAPI allows 1 million refreshes per month with free subscription_
-  7. click on Save
+     - command = /path/to/weatherAPI.sh
+     - Uncheck label
+     - Period = 900 (or whatever refresh value you want - weatherAPI allows 1 million refreshes per month with free subscription)
+     - click on Save
 
 **Screenshot:**
 
