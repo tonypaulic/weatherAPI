@@ -3,6 +3,7 @@
 This is a genmon bash script to query and display weather data using the weatherAPI (https://rapidapi.com/weatherapi/api/weatherapi-com/).
 
 **Requires:** xfce4-genmon-plugin wget jq APIKEY (from https://rapidapi.com/weatherapi/api/weatherapi-com/)
+
 Note: depending on the font your are using, you may need to adjust the number of "\t" (tabs) in the tooltip string to get the readings to line up properly.
 
 **How To:**
